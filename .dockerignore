@@ -1,0 +1,15 @@
+# 打包产物与中间文件
+dist/
+build/
+*.spec
+__pycache__/
+*.pyc
+
+# 本地数据库与数据目录（由卷挂载提供）
+*.db
+data/
+
+# 测试脚本与文档
+_test*.py
+DOCKER.md
+README.md

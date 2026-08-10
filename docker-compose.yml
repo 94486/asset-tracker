@@ -1,0 +1,15 @@
+services:
+  asset-tracker:
+    build: .
+    image: asset-tracker:latest
+    container_name: asset-tracker
+    ports:
+      - "5678:5678"
+    volumes:
+      # 数据库持久化到宿主机 ./data 目录
+      - ./data:/app/data
+    environment:
+      - HEADLESS=1
+      - DATA_DIR=/app/data
+      - PORT=5678
+    restart: unless-stopped
