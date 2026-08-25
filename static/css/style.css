@@ -33,6 +33,46 @@ body {
   background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 背景流动光晕层 — 动感效果 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle 400px at 20% 30%, rgba(91,140,255,.08), transparent 60%),
+    radial-gradient(circle 350px at 80% 70%, rgba(143,91,255,.06), transparent 60%),
+    radial-gradient(circle 300px at 50% 50%, rgba(61,220,151,.04), transparent 60%);
+  animation: bgFlow 20s ease-in-out infinite;
+}
+
+@keyframes bgFlow {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: .8; }
+  25% { transform: translate(30px, -20px) scale(1.05); opacity: 1; }
+  50% { transform: translate(-20px, 30px) scale(.95); opacity: .7; }
+  75% { transform: translate(20px, 20px) scale(1.02); opacity: .9; }
+}
+
+/* 点阵纹理呼吸效果 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(circle at center, rgba(100,150,255,.04) 1px, transparent 1.5px);
+  background-size: 26px 26px;
+  animation: dotPulse 6s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: .6; }
+  50% { opacity: 1; }
 }
 
 /* 等宽数字 */
@@ -122,6 +162,7 @@ th.sortable.sorted { color: var(--text); background: rgba(91,140,255,.06); }
 
 /* 表体 */
 tbody td { padding: 13px 12px; border-bottom: 1px solid rgba(42,53,84,.4); white-space: nowrap; }
+tbody td:first-child + td { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 tbody tr { transition: background .15s; }
 tbody tr:nth-child(even) { background: rgba(91,140,255,.025); }
 tbody tr:hover { background: rgba(91,140,255,.09); }
@@ -134,13 +175,14 @@ tbody tr.expanded { background: rgba(91,140,255,.1); }
 }
 .expand-btn:hover { color: var(--accent); background: rgba(91,140,255,.1); }
 
-.price { color: var(--gold); font-weight: 600; font-variant-numeric: tabular-nums; }
-.daily { color: var(--green); font-weight: 600; font-variant-numeric: tabular-nums; }
+.price { color: var(--gold); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.daily { color: var(--green); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .daily-sold { color: var(--gold) !important; font-weight: 500; opacity: .85; }
 .daily-damaged { color: var(--red) !important; font-weight: 500; opacity: .85; }
 .badge {
   padding: 4px 11px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
   display: inline-flex; align-items: center; gap: 5px; letter-spacing: .3px;
+  white-space: nowrap;
 }
 .badge::before {
   content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor;
@@ -184,9 +226,28 @@ tfoot .sum-label { color: var(--muted); text-align: right; }
 
 /* 行展开详情 */
 .detail-row td { padding: 0; border-bottom: 1px solid rgba(42,53,84,.5); background: rgba(15,20,32,.4); }
-.detail-content { padding: 16px 20px; }
+.detail-row {
+  animation: detailSlideIn .35s cubic-bezier(.4,0,.2,1);
+}
+@keyframes detailSlideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.detail-content {
+  padding: 16px 20px;
+  animation: detailFadeIn .4s ease-out .05s both;
+}
+@keyframes detailFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .detail-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px 24px;
+  animation: gridStagger .5s ease-out .1s both;
+}
+@keyframes gridStagger {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .detail-item { display: flex; flex-direction: column; gap: 2px; }
 .detail-label { font-size: 11px; color: var(--muted); }
@@ -220,6 +281,17 @@ tfoot .sum-label { color: var(--muted); text-align: right; }
 .filter select { width: auto; min-width: 120px; cursor: pointer; }
 .filter input { width: 220px; }
 .filter input::placeholder { color: rgba(154,165,191,.5); }
+
+/* 导入导出按钮 */
+.io-buttons { display: flex; gap: 8px; align-items: center; }
+.io-btn {
+  padding: 9px 14px; border-radius: 10px; cursor: pointer; font-size: 13px;
+  font-weight: 500; font-family: inherit; transition: all .2s;
+  background: rgba(30,39,64,.6); border: 1px solid rgba(91,140,255,.2);
+  color: var(--muted); backdrop-filter: blur(8px);
+}
+.io-btn:hover { color: var(--text); border-color: var(--accent); background: rgba(91,140,255,.1); transform: translateY(-1px); }
+.io-btn:active { transform: translateY(0); }
 .field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,140,255,.12); }
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
@@ -298,7 +370,7 @@ tfoot .sum-label { color: var(--muted); text-align: right; }
 }
 
 /* ---------- 报表 ---------- */
-.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 18px; margin-bottom: 22px; }
+.stat-row { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 14px; margin-bottom: 22px; }
 .stat {
   background: linear-gradient(145deg, rgba(28,38,58,.75), rgba(20,28,46,.65));
   backdrop-filter: blur(12px) saturate(1.2);
@@ -323,15 +395,48 @@ tfoot .sum-label { color: var(--muted); text-align: right; }
 .stat.o::after { background: radial-gradient(circle, rgba(255,140,66,.1), transparent 70%); }
 .stat:hover { transform: translateY(-3px); border-color: rgba(91,140,255,.35); box-shadow: 0 12px 36px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.08); }
 .stat .num {
-  font-size: 28px; font-weight: 700; margin-bottom: 6px;
+  font-size: 26px; font-weight: 700; margin-bottom: 6px;
   font-variant-numeric: tabular-nums; letter-spacing: -.5px;
   background: linear-gradient(135deg, #fff, #c8d4f0);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  line-height: 1.2;
 }
 .stat.g .num { background: linear-gradient(135deg, #3ddc97, #7eecd0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .stat.r .num { background: linear-gradient(135deg, #ff6b6b, #ff9999); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .stat.o .num { background: linear-gradient(135deg, #ff8c42, #ffb380); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.stat .lbl { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.stat .lbl {
+  font-size: 12px; color: var(--muted); line-height: 1.5;
+  overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  min-height: 36px;
+}
+
+/* 双数字卡片（售出回血/最终损失） */
+.stat.dual { display: flex; flex-direction: column; justify-content: space-between; padding: 16px 18px; }
+.stat.dual .dual-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 6px; margin-bottom: 8px;
+}
+.stat.dual .dual-item { flex: 1; text-align: center; min-width: 0; }
+.stat.dual .dual-label { font-size: 10.5px; color: var(--muted); margin-bottom: 4px; letter-spacing: .3px; white-space: nowrap; }
+.stat.dual .dual-num {
+  font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.3px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2;
+}
+.stat.dual .dual-num.g {
+  background: linear-gradient(135deg, #3ddc97, #7eecd0);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.stat.dual .dual-num.r {
+  background: linear-gradient(135deg, #ff6b6b, #ff9999);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.stat.dual .dual-divider {
+  width: 1px; height: 28px; background: linear-gradient(180deg, transparent, rgba(91,140,255,.3), transparent);
+  flex-shrink: 0;
+}
+.stat.dual .lbl { min-height: auto; text-align: center; font-size: 11px; }
 
 /* 趣味排行榜 */
 .fun-row { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 14px; margin-bottom: 22px; }
@@ -366,11 +471,15 @@ tfoot .sum-label { color: var(--muted); text-align: right; }
   text-transform: uppercase; font-weight: 600;
 }
 .fun-card .fun-name {
-  font-size: 16px; font-weight: 700; margin-bottom: 4px;
+  font-size: 15px; font-weight: 700; margin-bottom: 4px;
   background: linear-gradient(135deg, #fff, #c8d4f0);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.fun-card .fun-value { font-size: 13px; color: var(--accent2); font-variant-numeric: tabular-nums; font-weight: 500; }
+.fun-card .fun-value {
+  font-size: 12.5px; color: var(--accent2); font-variant-numeric: tabular-nums; font-weight: 500;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 .fun-card.empty { opacity: .45; }
 .fun-card.empty .fun-name { color: var(--muted); font-weight: 400; font-size: 13px; -webkit-text-fill-color: var(--muted); background: none; }
 .fun-card.empty .fun-icon { background: rgba(255,255,255,.03); border-color: rgba(255,255,255,.06); }
@@ -469,7 +578,10 @@ tfoot td {
 tfoot .sum-label { color: var(--muted); text-align: right; }
 
 /* ---------- 响应式 ---------- */
-@media (max-width: 1200px) { .fun-row { grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); } }
+@media (max-width: 1200px) {
+  .fun-row { grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); }
+  .stat-row { grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); }
+}
 @media (max-width: 768px) {
   .topbar { padding: 14px 16px; flex-direction: column; gap: 12px; align-items: flex-start; }
   main { padding: 16px; }
@@ -477,4 +589,5 @@ tfoot .sum-label { color: var(--muted); text-align: right; }
   .fab { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 24px; }
   .drawer { width: 100%; max-width: 100%; }
   .fun-row { grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); }
+  .stat-row { grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 12px; }
 }

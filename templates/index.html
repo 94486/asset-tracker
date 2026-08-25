@@ -40,6 +40,12 @@
           <select id="filter-category"><option value="">全部分类</option></select>
           <input id="filter-kw" placeholder="搜索名称 / 品牌 / 配置…">
         </div>
+        <div class="io-buttons">
+          <button class="io-btn" id="btn-export-json" title="导出为 JSON 文件">📤 JSON</button>
+          <button class="io-btn" id="btn-export-csv" title="导出为 CSV 文件（Excel可打开）">📊 CSV</button>
+          <button class="io-btn" id="btn-import" title="导入 JSON 或 CSV 文件">📥 导入</button>
+          <input type="file" id="import-file" accept=".json,.csv" style="display:none">
+        </div>
       </div>
       <div class="table-wrap">
         <table id="asset-table">

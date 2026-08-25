@@ -446,17 +446,28 @@ function renderStats(containerId, s) {
   const box = $("#" + containerId);
   if (!box) return;
   const pnl = Number(s.total_pnl || 0);
-  const pnlCls = pnl > 0 ? "g" : (pnl < 0 ? "r" : "o");
-  const pnlTxt = pnl > 0 ? "+" + fmt(pnl) : (pnl < 0 ? "−" + fmt(Math.abs(pnl)) : fmt(0));
-  const pnlLabel = pnl > 0 ? "总收益（盈利）" : (pnl < 0 ? "总亏损" : "总收益 / 亏损");
+  const sale = Number(s.total_sale || 0);
+  const settledCount = (s.profit_count || 0) + (s.loss_count || 0);
 
   box.innerHTML = `
     <div class="stat"><div class="num">${fmt(s.held_value)}</div><div class="lbl">持有资产总额（使用中 ${s.in_use_count} 件，不含已售/损坏）</div></div>
     <div class="stat o"><div class="num">${fmt(s.total_invested)}</div><div class="lbl">总投入（历史累计，不含已删除）</div></div>
-    <div class="stat ${pnlCls}"><div class="num">${pnlTxt}</div><div class="lbl">${pnlLabel} · 盈利 ${s.profit_count} 件 / 亏损 ${s.loss_count} 件</div></div>
+    <div class="stat dual">
+      <div class="dual-row">
+        <div class="dual-item">
+          <div class="dual-label">售出回血</div>
+          <div class="dual-num g">${fmt(sale)}</div>
+        </div>
+        <div class="dual-divider"></div>
+        <div class="dual-item">
+          <div class="dual-label">最终损失</div>
+          <div class="dual-num r">${pnl < 0 ? "−" + fmt(Math.abs(pnl)) : fmt(pnl)}</div>
+        </div>
+      </div>
+      <div class="lbl">已结算 ${settledCount} 件</div>
+    </div>
     <div class="stat"><div class="num">${s.total_count}</div><div class="lbl">资产总数（使用中 ${s.in_use_count} · 售出 ${s.sold_count} · 损坏 ${s.damaged_count}）</div></div>
-    <div class="stat g"><div class="num">${fmt(s.current_daily_total)}</div><div class="lbl">当前每日持有成本合计（仅使用中）</div></div>
-    <div class="stat r"><div class="num">${fmt(s.total_depreciation)}</div><div class="lbl">已结算资产折旧合计</div></div>`;
+    <div class="stat g"><div class="num">${fmt(s.current_daily_total)}</div><div class="lbl">当前每日持有成本合计（仅使用中）</div></div>`;
 }
 
 // ---------- 报表 ----------
@@ -496,18 +507,8 @@ function renderFunRank() {
   const yearEntries = Object.entries(yearMap).sort((a, b) => b[1] - a[1]);
   const yearKing = yearEntries.length ? { name: yearEntries[0][0] + "年", _total: yearEntries[0][1] } : null;
 
-  // 最保值品牌：已结算资产平均折旧率最低
-  const brandDepMap = {};
-  settled.forEach((p) => {
-    const b = p.brand || "未标注";
-    if (!brandDepMap[b]) brandDepMap[b] = { total: 0, count: 0 };
-    brandDepMap[b].total += p.depreciation_rate || 0;
-    brandDepMap[b].count += 1;
-  });
-  const bestBrandEntry = Object.entries(brandDepMap)
-    .map(([b, v]) => ({ brand: b, avgRate: v.total / v.count }))
-    .sort((a, b) => a.avgRate - b.avgRate)[0];
-  const bestBrand = bestBrandEntry ? { name: bestBrandEntry.brand, _rate: bestBrandEntry.avgRate } : null;
+  // 最保值产品：已结算产品中折旧率最低
+  const bestProduct = settled.length ? [...settled].sort((a, b) => (a.depreciation_rate || 0) - (b.depreciation_rate || 0))[0] : null;
 
   // 最新入手：购买日期最近
   const newest = [...allProducts].sort((a, b) => (b.purchase_date || "").localeCompare(a.purchase_date || ""))[0];
@@ -518,7 +519,7 @@ function renderFunRank() {
     { icon: "📉", title: "跳水冠军", p: diver, val: diver ? `折旧率 ${diver.depreciation_rate}%` : "虚位以待" },
     { icon: "✨", title: "性价比之王", p: valueKing, val: valueKing ? `仅 ${fmt(valueKing.daily_cost)}/天` : "虚位以待" },
     { icon: "📅", title: "年度败家王", p: yearKing, val: yearKing ? `共投入 ${fmt(yearKing._total)}` : "虚位以待" },
-    { icon: "🛡️", title: "最保值品牌", p: bestBrand, val: bestBrand ? `平均折旧 ${bestBrand._rate.toFixed(1)}%` : "虚位以待" },
+    { icon: "🛡️", title: "最保值产品", p: bestProduct, val: bestProduct ? `折旧率仅 ${bestProduct.depreciation_rate}%` : "虚位以待" },
     { icon: "🔥", title: "最新入手", p: newest, val: newest ? `${newest.purchase_date} 入手` : "虚位以待" },
   ];
 
@@ -642,6 +643,58 @@ async function loadReport() {
   });
 }
 window.addEventListener("resize", () => Object.values(charts).forEach((c) => c.resize()));
+
+// ---------- 数据导入导出 ----------
+function downloadFile(url, filename) {
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+$("#btn-export-json").onclick = () => {
+  const ts = new Date().toISOString().slice(0, 10);
+  downloadFile(`/api/export?format=json&_=${Date.now()}`, `asset_tracker_${ts}.json`);
+};
+
+$("#btn-export-csv").onclick = () => {
+  const ts = new Date().toISOString().slice(0, 10);
+  downloadFile(`/api/export?format=csv&_=${Date.now()}`, `asset_tracker_${ts}.csv`);
+};
+
+$("#btn-import").onclick = () => $("#import-file").click();
+
+$("#import-file").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const mode = confirm("选择导入模式：\n\n点击「确定」= 追加导入（保留现有数据）\n点击「取消」= 覆盖导入（清空现有数据后导入）");
+  const importMode = mode ? "append" : "replace";
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("mode", importMode);
+
+  try {
+    const res = await fetch("/api/import", { method: "POST", body: formData });
+    const data = await res.json();
+    if (data.ok) {
+      alert(`导入成功！\n\n共 ${data.total} 条数据\n成功导入：${data.inserted} 条\n跳过：${data.skipped} 条\n\n模式：${importMode === "append" ? "追加" : "覆盖"}`);
+      loadProducts();
+      // 如果当前在报表页，重新加载报表
+      if (document.querySelector('#tab-report').classList.contains('active')) {
+        loadReport();
+      }
+    } else {
+      alert(`导入失败：${data.msg || "未知错误"}`);
+    }
+  } catch (err) {
+    alert(`导入出错：${err.message}`);
+  }
+  e.target.value = "";
+});
 
 // ---------- 初始化 ----------
 resetForm();

@@ -15,7 +15,7 @@ import subprocess
 import webbrowser
 from datetime import datetime, date
 
-from flask import Flask, jsonify, request, render_template, send_from_directory
+from flask import Flask, jsonify, request, render_template, send_from_directory, Response
 from werkzeug.serving import make_server
 
 # ---------- 运行配置 ----------
@@ -423,6 +423,164 @@ def report_depreciation():
         "ok": True,
         "data": {"daily_rank": daily_rank, "dep_rank": dep_rank, "timeline": timeline},
     })
+
+
+# ---------- 数据导出 ----------
+EXPORT_FIELDS = ["name", "brand", "category", "price", "purchase_date",
+                  "config", "status", "sale_date", "sale_price", "custom_fields", "notes"]
+
+
+@app.route("/api/export", methods=["GET"])
+def export_data():
+    """导出所有资产数据，支持 JSON 和 CSV 格式"""
+    fmt = request.args.get("format", "json").lower()
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM products ORDER BY purchase_date DESC, id DESC").fetchall()
+    conn.close()
+
+    products = []
+    for r in rows:
+        item = {}
+        for f in EXPORT_FIELDS:
+            val = r[f]
+            if f == "custom_fields" and val:
+                try:
+                    val = json.loads(val)
+                except Exception:
+                    val = {}
+            item[f] = val
+        products.append(item)
+
+    if fmt == "csv":
+        import csv
+        import io
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=EXPORT_FIELDS)
+        writer.writeheader()
+        for p in products:
+            row = dict(p)
+            if isinstance(row.get("custom_fields"), dict):
+                row["custom_fields"] = json.dumps(row["custom_fields"], ensure_ascii=False)
+            writer.writerow(row)
+        csv_content = output.getvalue()
+        return Response(
+            csv_content,
+            mimetype="text/csv; charset=utf-8",
+            headers={"Content-Disposition": "attachment; filename=asset_tracker_export.csv"},
+        )
+
+    # 默认 JSON
+    payload = {
+        "version": "1.0",
+        "export_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "count": len(products),
+        "products": products,
+    }
+    return Response(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        mimetype="application/json; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=asset_tracker_export.json"},
+    )
+
+
+# ---------- 数据导入 ----------
+@app.route("/api/import", methods=["POST"])
+def import_data():
+    """导入资产数据，支持 JSON 和 CSV 文件"""
+    if "file" not in request.files:
+        return jsonify({"ok": False, "msg": "请选择要导入的文件"}), 400
+
+    file = request.files["file"]
+    mode = request.form.get("mode", "append")  # append 或 replace
+    filename = file.filename.lower()
+
+    try:
+        if filename.endswith(".json"):
+            content = file.read().decode("utf-8-sig")
+            data = json.loads(content)
+            products = data.get("products", data) if isinstance(data, dict) else data
+            if not isinstance(products, list):
+                return jsonify({"ok": False, "msg": "JSON 格式不正确，缺少 products 数组"}), 400
+        elif filename.endswith(".csv"):
+            import csv
+            content = file.read().decode("utf-8-sig")
+            reader = csv.DictReader(content.splitlines())
+            products = []
+            for row in reader:
+                item = {}
+                for f in EXPORT_FIELDS:
+                    val = row.get(f, "")
+                    if f == "price" and val:
+                        try:
+                            val = float(val)
+                        except ValueError:
+                            val = 0
+                    elif f == "sale_price" and val:
+                        try:
+                            val = float(val)
+                        except ValueError:
+                            val = None
+                    elif f == "custom_fields" and val:
+                        try:
+                            val = json.loads(val)
+                        except Exception:
+                            val = {}
+                    elif val == "":
+                        val = None
+                    item[f] = val
+                products.append(item)
+        else:
+            return jsonify({"ok": False, "msg": "仅支持 .json 和 .csv 文件"}), 400
+    except Exception as e:
+        return jsonify({"ok": False, "msg": f"文件解析失败：{str(e)}"}), 400
+
+    if not products:
+        return jsonify({"ok": False, "msg": "文件中没有有效数据"}), 400
+
+    conn = get_db()
+    if mode == "replace":
+        conn.execute("DELETE FROM products")
+
+    inserted = 0
+    skipped = 0
+    for p in products:
+        name = (p.get("name") or "").strip()
+        price = p.get("price")
+        purchase_date = p.get("purchase_date")
+        if not name or price is None or not purchase_date:
+            skipped += 1
+            continue
+        try:
+            custom_fields = p.get("custom_fields") or {}
+            if isinstance(custom_fields, str):
+                custom_fields = json.loads(custom_fields)
+            conn.execute(
+                """
+                INSERT INTO products
+                (name, brand, category, price, purchase_date, config, status, sale_date, sale_price, custom_fields, notes)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                """,
+                (
+                    name,
+                    p.get("brand") or "",
+                    p.get("category") or "",
+                    float(price),
+                    purchase_date,
+                    p.get("config") or "",
+                    p.get("status") or "in_use",
+                    p.get("sale_date"),
+                    p.get("sale_price"),
+                    json.dumps(custom_fields, ensure_ascii=False),
+                    p.get("notes") or "",
+                ),
+            )
+            inserted += 1
+        except Exception:
+            skipped += 1
+
+    conn.commit()
+    conn.close()
+    return jsonify({"ok": True, "inserted": inserted, "skipped": skipped, "total": len(products)})
 
 
 # ---------- 托盘图标 ----------
