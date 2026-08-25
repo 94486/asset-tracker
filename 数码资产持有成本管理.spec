@@ -13,7 +13,7 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['C:/Users/hai1194/.qwenpaw/workspaces/default/asset_tracker/app.py'],
+    ['D:/94486/asset_tracker/app.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,

@@ -25,77 +25,100 @@
 <main>
   <!-- ============ 资产列表页 ============ -->
   <section id="tab-assets" class="page active">
-    <div class="layout">
-      <!-- 左侧：录入表单 -->
-      <aside class="card form-card">
-        <h2 id="form-title">✚ 录入新资产</h2>
-        <input type="hidden" id="f-id">
-        <div class="field"><label>名称 *</label><input id="f-name" placeholder="如 iPhone 15 Pro"></div>
-        <div class="row">
-          <div class="field"><label>品牌</label><input id="f-brand" placeholder="如 Apple"></div>
-          <div class="field"><label>分类</label><input id="f-category" placeholder="如 手机"></div>
+    <div class="stat-row" id="stat-row-assets"></div>
+    <div class="card list-card">
+      <div class="list-head">
+        <h2>资产列表</h2>
+        <div class="filter">
+          <select id="filter-status">
+            <option value="">全部状态</option>
+            <option value="in_use">使用中</option>
+            <option value="sold">已售出</option>
+            <option value="damaged">已损坏</option>
+          </select>
+          <select id="filter-brand"><option value="">全部品牌</option></select>
+          <select id="filter-category"><option value="">全部分类</option></select>
+          <input id="filter-kw" placeholder="搜索名称 / 品牌 / 配置…">
         </div>
-        <div class="row">
-          <div class="field"><label>购买价格 *</label><input id="f-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
-          <div class="field"><label>购买时间 *</label><input id="f-pdate" type="date"></div>
-        </div>
-        <div class="field"><label>配置</label><input id="f-config" placeholder="如 256GB / 16G内存"></div>
-
-        <!-- 自定义字段区 -->
-        <div class="field">
-          <label>自定义选项 <button type="button" class="mini-btn" id="add-custom">+ 添加</button></label>
-          <div id="custom-list"></div>
-        </div>
-
-        <div class="field"><label>备注</label><textarea id="f-notes" rows="2" placeholder="可选"></textarea></div>
-
-        <div class="btn-row">
-          <button class="btn primary" id="btn-save">保存</button>
-          <button class="btn ghost" id="btn-reset">重置</button>
-        </div>
-      </aside>
-
-      <!-- 右侧：列表 -->
-      <div class="card list-card">
-        <div class="list-head">
-          <h2>资产列表</h2>
-          <div class="filter">
-            <select id="filter-status">
-              <option value="">全部状态</option>
-              <option value="in_use">使用中</option>
-              <option value="sold">已售出</option>
-              <option value="damaged">已损坏</option>
-            </select>
-            <input id="filter-kw" placeholder="搜索名称/品牌…">
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table id="asset-table">
-            <thead>
-              <tr>
-                <th>名称</th><th>品牌</th><th>价格</th><th>购买时间</th>
-                <th>已持有</th><th>每日成本</th><th>盈亏</th><th>状态</th><th>操作</th>
-              </tr>
-            </thead>
-            <tbody id="asset-body"></tbody>
-          </table>
-        </div>
-        <div class="empty" id="empty-tip" style="display:none">暂无数据，先在左侧录入一条吧～</div>
       </div>
+      <div class="table-wrap">
+        <table id="asset-table">
+          <thead>
+            <tr>
+              <th class="col-expand"></th>
+              <th class="sortable" data-sort="name">名称</th>
+              <th class="sortable" data-sort="brand">品牌</th>
+              <th class="sortable num" data-sort="price">价格</th>
+              <th class="sortable num" data-sort="purchase_date">购买时间</th>
+              <th class="sortable num" data-sort="days_held">已持有</th>
+              <th class="sortable num" data-sort="daily_cost">每日成本</th>
+              <th class="sortable num" data-sort="profit_loss">盈亏</th>
+              <th class="sortable" data-sort="status">状态</th>
+              <th class="col-ops">操作</th>
+            </tr>
+          </thead>
+          <tbody id="asset-body"></tbody>
+          <tfoot id="asset-foot"></tfoot>
+        </table>
+      </div>
+      <div class="empty" id="empty-tip" style="display:none">暂无数据，点击右下角「+ 新增资产」开始记录吧～</div>
     </div>
   </section>
 
   <!-- ============ 报表页 ============ -->
   <section id="tab-report" class="page">
     <div class="stat-row" id="stat-row"></div>
+
+    <!-- 趣味排行榜 -->
+    <div class="fun-row" id="fun-row"></div>
+
     <div class="chart-grid">
       <div class="card"><h3>每日持有成本排名</h3><div class="chart" id="chart-daily"></div></div>
       <div class="card"><h3>资产折旧排行（已结算）</h3><div class="chart" id="chart-dep"></div></div>
       <div class="card"><h3>品牌投入分布</h3><div class="chart" id="chart-brand"></div></div>
-      <div class="card"><h3>累计投入时间线</h3><div class="chart" id="chart-timeline"></div></div>
+      <div class="card"><h3>分类投入分布</h3><div class="chart" id="chart-category"></div></div>
+      <div class="card"><h3>月度投入趋势</h3><div class="chart" id="chart-monthly"></div></div>
+      <div class="card"><h3>资产画像 · 持有天数 vs 每日成本</h3><div class="chart" id="chart-scatter"></div></div>
     </div>
   </section>
 </main>
+
+<!-- 浮动新增按钮 -->
+<button class="fab" id="fab-add" title="新增资产">+</button>
+
+<!-- 右侧抽屉：录入/编辑表单 -->
+<div class="drawer-mask" id="drawer-mask"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2 id="form-title">✚ 录入新资产</h2>
+    <button class="drawer-close" id="drawer-close" title="关闭">✕</button>
+  </div>
+  <div class="drawer-body">
+    <input type="hidden" id="f-id">
+    <div class="field"><label>名称 *</label><input id="f-name" placeholder="如 iPhone 15 Pro"></div>
+    <div class="row">
+      <div class="field"><label>品牌</label><input id="f-brand" placeholder="如 Apple"></div>
+      <div class="field"><label>分类</label><input id="f-category" placeholder="如 手机"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>购买价格 *</label><input id="f-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
+      <div class="field"><label>购买时间 *</label><input id="f-pdate" type="date"></div>
+    </div>
+    <div class="field"><label>配置</label><input id="f-config" placeholder="如 256GB / 16G内存"></div>
+
+    <!-- 自定义字段区 -->
+    <div class="field">
+      <label>自定义选项 <button type="button" class="mini-btn" id="add-custom">+ 添加</button></label>
+      <div id="custom-list"></div>
+    </div>
+
+    <div class="field"><label>备注</label><textarea id="f-notes" rows="3" placeholder="可选"></textarea></div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn ghost" id="btn-reset">重置</button>
+    <button class="btn primary" id="btn-save">保存</button>
+  </div>
+</aside>
 
 <!-- 出售/损坏弹窗 -->
 <div class="modal-mask" id="modal-mask">

@@ -7,12 +7,16 @@ Flask + SQLite + ECharts
 import os
 import sys
 import json
+import time
+import socket
 import sqlite3
 import threading
+import subprocess
 import webbrowser
 from datetime import datetime, date
 
 from flask import Flask, jsonify, request, render_template, send_from_directory
+from werkzeug.serving import make_server
 
 # ---------- 运行配置 ----------
 PORT = int(os.environ.get("PORT", "5678"))
@@ -91,6 +95,49 @@ def init_db():
     )
     conn.commit()
     conn.close()
+
+
+# ---------- 端口占用检测与清理 ----------
+def is_port_in_use(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.settimeout(0.5)
+        return s.connect_ex(("127.0.0.1", port)) == 0
+
+
+def kill_port(port):
+    """Windows: 杀掉占用指定端口的进程，返回是否成功"""
+    try:
+        result = subprocess.run(
+            ["netstat", "-ano"], capture_output=True, text=True, creationflags=0x08000000
+        )
+        for line in result.stdout.splitlines():
+            if f":{port}" in line and "LISTENING" in line:
+                parts = line.split()
+                pid = parts[-1]
+                if pid and pid != "0":
+                    subprocess.run(
+                        ["taskkill", "/F", "/PID", pid],
+                        capture_output=True, creationflags=0x08000000,
+                    )
+                    return True
+    except Exception:
+        pass
+    return False
+
+
+def ensure_port_free(port):
+    """启动前确保端口可用：被占用则尝试清理，等待最多 3 秒"""
+    if is_port_in_use(port):
+        print(f"[提示] 端口 {port} 被占用，正在清理旧进程...")
+        kill_port(port)
+        for _ in range(6):
+            time.sleep(0.5)
+            if not is_port_in_use(port):
+                print("[提示] 端口已释放")
+                return True
+        print("[警告] 端口清理失败，可能需要手动结束旧进程")
+        return False
+    return True
 
 
 # ---------- 成本计算 ----------
@@ -394,7 +441,7 @@ def build_tray_image():
 
 def run_desktop():
     """桌面模式：后台起服务 + 自动打开浏览器 + 系统托盘图标（可退出）"""
-    from werkzeug.serving import make_server
+    ensure_port_free(PORT)
     server = make_server("127.0.0.1", PORT, app, threaded=True)
     t = threading.Thread(target=server.serve_forever, daemon=True)
     t.start()
@@ -410,14 +457,17 @@ def run_desktop():
             webbrowser.open(URL)
 
         def quit_app(icon, item):
+            # 先关 HTTP 服务，再退托盘，最后强制退出（兜底）
             try:
                 server.shutdown()
+                server.server_close()
             except Exception:
                 pass
             try:
                 icon.stop()
             except Exception:
                 pass
+            time.sleep(0.3)
             os._exit(0)
 
         menu = pystray.Menu(
@@ -433,6 +483,25 @@ def run_desktop():
             t.join()
         except KeyboardInterrupt:
             server.shutdown()
+            server.server_close()
+
+
+def run_dev():
+    """开发模式：make_server + 优雅退出 + 自动开浏览器"""
+    init_db()
+    ensure_port_free(PORT)
+    server = make_server("127.0.0.1", PORT, app, threaded=True)
+    threading.Timer(1.0, lambda: webbrowser.open(URL)).start()
+    print(f" * 服务已启动: {URL}")
+    print(" * 按 Ctrl+C 退出")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\n正在关闭服务...")
+    finally:
+        server.shutdown()
+        server.server_close()
+        print("已退出")
 
 
 # ---------- 启动 ----------
@@ -440,11 +509,17 @@ if __name__ == "__main__":
     init_db()
     if HEADLESS:
         # Docker / 服务器：纯服务模式
-        app.run(host=HOST, port=PORT, debug=False, use_reloader=False)
+        ensure_port_free(PORT)
+        server = make_server(HOST, PORT, app, threaded=True)
+        print(f" * 服务已启动: http://{HOST}:{PORT}")
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            server.shutdown()
+            server.server_close()
     elif IS_FROZEN:
         # 打包后的 exe：托盘 + 自动开浏览器
         run_desktop()
     else:
-        # 开发模式：起服务并自动开浏览器
-        threading.Timer(1.0, lambda: webbrowser.open(URL)).start()
-        app.run(host="127.0.0.1", port=PORT, debug=False, use_reloader=False)
+        # 开发模式
+        run_dev()
