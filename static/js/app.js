@@ -291,7 +291,7 @@ function renderTable() {
       <td class="price num">${fmt(p.price)}</td>
       <td class="num">${p.purchase_date || "—"}</td>
       <td class="num">${p.days_held} 天</td>
-      <td class="daily num">${fmt(p.daily_cost)}/天</td>
+      <td class="daily daily-${p.status} num">${fmt(p.daily_cost)}/天</td>
       <td>${pnlCell(p)}</td>
       <td><span class="badge ${p.status}">${statusText(p.status)}</span></td>
       <td class="col-ops">
@@ -455,7 +455,7 @@ function renderStats(containerId, s) {
     <div class="stat o"><div class="num">${fmt(s.total_invested)}</div><div class="lbl">总投入（历史累计，不含已删除）</div></div>
     <div class="stat ${pnlCls}"><div class="num">${pnlTxt}</div><div class="lbl">${pnlLabel} · 盈利 ${s.profit_count} 件 / 亏损 ${s.loss_count} 件</div></div>
     <div class="stat"><div class="num">${s.total_count}</div><div class="lbl">资产总数（使用中 ${s.in_use_count} · 售出 ${s.sold_count} · 损坏 ${s.damaged_count}）</div></div>
-    <div class="stat g"><div class="num">${fmt(s.current_daily_total)}</div><div class="lbl">当前每日持有成本合计</div></div>
+    <div class="stat g"><div class="num">${fmt(s.current_daily_total)}</div><div class="lbl">当前每日持有成本合计（仅使用中）</div></div>
     <div class="stat r"><div class="num">${fmt(s.total_depreciation)}</div><div class="lbl">已结算资产折旧合计</div></div>`;
 }
 
