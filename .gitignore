@@ -21,6 +21,10 @@ dist/
 *.db-journal
 *.db-wal
 *.db-shm
+*.db.backup*
+
+# 遗留截图 / 临时标注（无意义，不入库）
+user_annotation.png
 
 # 打包日志
 *.log
