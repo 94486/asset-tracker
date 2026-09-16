@@ -634,6 +634,11 @@ def run_desktop():
             pystray.MenuItem("退出程序", quit_app),
         )
         icon = pystray.Icon("asset_tracker", build_tray_image(), "数码资产持有成本管理", menu)
+        # 单击托盘图标直接打开页面
+        try:
+            icon.on_activate = lambda icon, item: webbrowser.open(URL)
+        except Exception:
+            pass
         icon.run()  # 阻塞主线程，直到退出
     except Exception:
         # 无托盘环境则退化为常驻服务

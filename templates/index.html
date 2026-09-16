@@ -8,43 +8,96 @@
 </head>
 <body>
 
+<!-- ============ SVG 图标精灵（Feather/Lucide 线性风格，currentColor 描边） ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="ic-list"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></g>
+    <g id="ic-chart"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></g>
+    <g id="ic-search"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></g>
+    <g id="ic-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></g>
+    <g id="ic-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></g>
+    <g id="ic-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></g>
+    <g id="ic-plus"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></g>
+    <g id="ic-close"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></g>
+    <g id="ic-chevron"><polyline points="9 18 15 12 9 6"/></g>
+    <g id="ic-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></g>
+    <g id="ic-trash"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></g>
+    <g id="ic-restore"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></g>
+    <g id="ic-sell"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></g>
+    <g id="ic-box"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></g>
+    <g id="ic-bulb"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></g>
+    <g id="ic-trophy"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></g>
+    <g id="ic-activity"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></g>
+    <g id="ic-grid"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></g>
+    <g id="ic-pie"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></g>
+    <g id="ic-calendar"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></g>
+    <g id="ic-scatter"><circle cx="7" cy="14" r="2"/><circle cx="11" cy="7" r="2"/><circle cx="17" cy="12" r="2"/><circle cx="15" cy="17" r="2"/></g>
+    <g id="ic-money"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></g>
+    <g id="ic-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></g>
+    <g id="ic-cat-phone"><rect x="7" y="2" width="10" height="20" rx="2.2"/><line x1="11" y1="18" x2="13" y2="18"/></g>
+    <g id="ic-cat-tablet"><rect x="4" y="2" width="16" height="20" rx="2.2"/><line x1="12" y1="18" x2="12.01" y2="18"/></g>
+    <g id="ic-cat-laptop"><rect x="4" y="5" width="16" height="10" rx="1"/><line x1="2" y1="19" x2="22" y2="19"/></g>
+    <g id="ic-cat-monitor"><rect x="3" y="4" width="18" height="12" rx="1.5"/><line x1="12" y1="16" x2="12" y2="20"/><line x1="8" y1="20" x2="16" y2="20"/></g>
+    <g id="ic-cat-headphone"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2" y="14" width="4" height="6" rx="1.5"/><rect x="18" y="14" width="4" height="6" rx="1.5"/></g>
+    <g id="ic-cat-watch"><circle cx="12" cy="12" r="6"/><polyline points="12 9.5 12 12 13.5 13"/><path d="M9 6.3 9.2 3h5.6l.2 3.3M9 17.7 9.2 21h5.6l.2-3.3"/></g>
+    <g id="ic-cat-camera"><path d="M4 8h3l2-2h6l2 2h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></g>
+    <g id="ic-cat-keyboard"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6.01" y2="10"/><line x1="10" y1="10" x2="10.01" y2="10"/><line x1="14" y1="10" x2="14.01" y2="10"/><line x1="18" y1="10" x2="18.01" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></g>
+    <g id="ic-cat-mouse"><rect x="7" y="3" width="10" height="18" rx="5"/><line x1="12" y1="7" x2="12" y2="11"/></g>
+    <g id="ic-cat-gamepad"><path d="M17.32 5H6.68a4 4 0 0 0-3.98 3.61L2 14.5A2.5 2.5 0 0 0 4.5 17c.83 0 1.6-.44 2.02-1.15L8.5 13h7l1.98 2.85A2.5 2.5 0 0 0 19.5 17 2.5 2.5 0 0 0 22 14.5l-.7-5.89A4 4 0 0 0 17.32 5z"/><line x1="7" y1="11" x2="11" y2="11"/><line x1="9" y1="9" x2="9" y2="13"/><circle cx="15.5" cy="10.5" r="0.6"/><circle cx="17.5" cy="12.5" r="0.6"/></g>
+    <g id="ic-cat-tv"><rect x="2" y="7" width="20" height="14" rx="2"/><polyline points="17 2 12 7 7 2"/></g>
+    <g id="ic-cat-speaker"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="14" r="3.5"/><line x1="12" y1="6" x2="12.01" y2="6"/></g>
+    <g id="ic-cat-battery"><rect x="2" y="7" width="17" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="10" y1="10" x2="10" y2="14"/></g>
+    <g id="ic-cat-glasses"><circle cx="6" cy="15" r="3"/><circle cx="18" cy="15" r="3"/><path d="M9 15a3 3 0 0 1 6 0"/><path d="M3 15 4.5 8H7M21 15l-1.5-7H17"/></g>
+  </defs>
+</svg>
+
 <header class="topbar">
   <div class="brand">
-    <span class="logo">◈</span>
-    <div>
-      <h1>数码资产持有成本管理系统</h1>
+    <span class="logo"><svg class="ic"><use href="#ic-chart"/></svg></span>
+    <div class="brand-text">
+      <h1>数码资产持有成本管理</h1>
       <p>记录每一次购入，算清每天的持有成本</p>
     </div>
   </div>
-  <nav class="tabs">
-    <button class="tab active" data-tab="assets">资产列表</button>
-    <button class="tab" data-tab="report">报表分析</button>
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="assets" role="tab"><svg class="ic"><use href="#ic-list"/></svg><span>资产列表</span></button>
+    <button class="tab" data-tab="report" role="tab"><svg class="ic"><use href="#ic-chart"/></svg><span>报表分析</span></button>
   </nav>
 </header>
 
 <main>
   <!-- ============ 资产列表页 ============ -->
   <section id="tab-assets" class="page active">
-    <div class="stat-row" id="stat-row-assets"></div>
     <div class="card list-card">
       <div class="list-head">
-        <h2>资产列表</h2>
-        <div class="filter">
-          <select id="filter-status">
-            <option value="">全部状态</option>
-            <option value="in_use">使用中</option>
-            <option value="sold">已售出</option>
-            <option value="damaged">已损坏</option>
-          </select>
-          <select id="filter-brand"><option value="">全部品牌</option></select>
-          <select id="filter-category"><option value="">全部分类</option></select>
-          <input id="filter-kw" placeholder="搜索名称 / 品牌 / 配置…">
+        <div class="page-title">
+          <h2>资产列表</h2>
+          <span class="count-pill" id="asset-count">0 件</span>
         </div>
-        <div class="io-buttons">
-          <button class="io-btn" id="btn-export-json" title="导出为 JSON 文件">📤 JSON</button>
-          <button class="io-btn" id="btn-export-csv" title="导出为 CSV 文件（Excel可打开）">📊 CSV</button>
-          <button class="io-btn" id="btn-import" title="导入 JSON 或 CSV 文件">📥 导入</button>
-          <input type="file" id="import-file" accept=".json,.csv" style="display:none">
+        <div class="toolbar">
+          <div class="search-box">
+            <svg class="ic search-ic"><use href="#ic-search"/></svg>
+            <input id="filter-kw" placeholder="搜索名称 / 品牌 / 配置…" autocomplete="off">
+          </div>
+          <div class="filter">
+            <div class="select-wrap">
+              <svg class="ic"><use href="#ic-filter"/></svg>
+              <select id="filter-status">
+                <option value="">全部状态</option>
+                <option value="in_use">使用中</option>
+                <option value="sold">已售出</option>
+                <option value="damaged">已损坏</option>
+              </select>
+            </div>
+            <div class="select-wrap"><select id="filter-brand"><option value="">全部品牌</option></select></div>
+            <div class="select-wrap"><select id="filter-category"><option value="">全部分类</option></select></div>
+          </div>
+          <div class="io-buttons">
+            <button class="io-btn" id="btn-export-json" title="导出为 JSON 文件"><svg class="ic"><use href="#ic-download"/></svg><span>JSON</span></button>
+            <button class="io-btn" id="btn-export-csv" title="导出为 CSV 文件（Excel 可打开）"><svg class="ic"><use href="#ic-download"/></svg><span>CSV</span></button>
+            <button class="io-btn" id="btn-import" title="导入 JSON 或 CSV 文件"><svg class="ic"><use href="#ic-upload"/></svg><span>导入</span></button>
+            <input type="file" id="import-file" accept=".json,.csv" style="display:none">
+          </div>
         </div>
       </div>
       <div class="table-wrap">
@@ -67,54 +120,65 @@
           <tfoot id="asset-foot"></tfoot>
         </table>
       </div>
-      <div class="empty" id="empty-tip" style="display:none">暂无数据，点击右下角「+ 新增资产」开始记录吧～</div>
+      <div class="empty" id="empty-tip" style="display:none"></div>
     </div>
   </section>
 
   <!-- ============ 报表页 ============ -->
   <section id="tab-report" class="page">
+    <div class="section-head"><svg class="ic"><use href="#ic-activity"/></svg><h2>总览</h2></div>
     <div class="stat-row" id="stat-row"></div>
 
-    <!-- 趣味排行榜 -->
+    <!-- 智能洞察（由 JS 填充） -->
+    <div id="insight-box"></div>
+
+    <div class="section-head"><svg class="ic"><use href="#ic-trophy"/></svg><h2>趣味排行</h2></div>
     <div class="fun-row" id="fun-row"></div>
 
+    <div class="section-head"><svg class="ic"><use href="#ic-layers"/></svg><h2>数据图表</h2></div>
     <div class="chart-grid">
-      <div class="card"><h3>每日持有成本排名</h3><div class="chart" id="chart-daily"></div></div>
-      <div class="card"><h3>资产折旧排行（已结算）</h3><div class="chart" id="chart-dep"></div></div>
-      <div class="card"><h3>品牌投入分布</h3><div class="chart" id="chart-brand"></div></div>
-      <div class="card"><h3>分类投入分布</h3><div class="chart" id="chart-category"></div></div>
-      <div class="card"><h3>月度投入趋势</h3><div class="chart" id="chart-monthly"></div></div>
-      <div class="card"><h3>资产画像 · 持有天数 vs 每日成本</h3><div class="chart" id="chart-scatter"></div></div>
+      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-money"/></svg><h3>每日持有成本排名</h3></div><div class="chart" id="chart-daily"></div></div>
+      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-chart"/></svg><h3>资产折旧排行（已结算）</h3></div><div class="chart" id="chart-dep"></div></div>
+      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-pie"/></svg><h3>品牌投入分布</h3></div><div class="chart" id="chart-brand"></div></div>
+      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-grid"/></svg><h3>分类投入分布</h3></div><div class="chart" id="chart-category"></div></div>
+      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-calendar"/></svg><h3>月度投入趋势</h3></div><div class="chart" id="chart-monthly"></div></div>
+      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-scatter"/></svg><h3>资产画像 · 持有天数 vs 每日成本</h3></div><div class="chart" id="chart-scatter"></div></div>
     </div>
   </section>
 </main>
 
 <!-- 浮动新增按钮 -->
-<button class="fab" id="fab-add" title="新增资产">+</button>
+<button class="fab" id="fab-add" title="新增资产 (N)" aria-label="新增资产"><svg class="ic"><use href="#ic-plus"/></svg></button>
 
 <!-- 右侧抽屉：录入/编辑表单 -->
 <div class="drawer-mask" id="drawer-mask"></div>
-<aside class="drawer" id="drawer">
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="form-title">
   <div class="drawer-head">
-    <h2 id="form-title">✚ 录入新资产</h2>
-    <button class="drawer-close" id="drawer-close" title="关闭">✕</button>
+    <h2 id="form-title">录入新资产</h2>
+    <button class="drawer-close" id="drawer-close" title="关闭 (Esc)" aria-label="关闭"><svg class="ic"><use href="#ic-close"/></svg></button>
   </div>
   <div class="drawer-body">
     <input type="hidden" id="f-id">
-    <div class="field"><label>名称 *</label><input id="f-name" placeholder="如 iPhone 15 Pro"></div>
-    <div class="row">
-      <div class="field"><label>品牌</label><input id="f-brand" placeholder="如 Apple"></div>
-      <div class="field"><label>分类</label><input id="f-category" placeholder="如 手机"></div>
+    <div class="form-group">
+      <div class="form-group-title">基本信息</div>
+      <div class="field"><label>名称 <span class="req">*</span></label><input id="f-name" placeholder="如 iPhone 15 Pro"></div>
+      <div class="row">
+        <div class="field"><label>品牌</label><input id="f-brand" placeholder="如 Apple"></div>
+        <div class="field"><label>分类</label><input id="f-category" placeholder="如 手机"></div>
+      </div>
     </div>
-    <div class="row">
-      <div class="field"><label>购买价格 *</label><input id="f-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
-      <div class="field"><label>购买时间 *</label><input id="f-pdate" type="date"></div>
+    <div class="form-group">
+      <div class="form-group-title">购入信息</div>
+      <div class="row">
+        <div class="field"><label>购买价格 <span class="req">*</span></label><input id="f-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="field"><label>购买时间 <span class="req">*</span></label><input id="f-pdate" type="date"></div>
+      </div>
+      <div class="field"><label>配置</label><input id="f-config" placeholder="如 256GB / 16G内存"></div>
     </div>
-    <div class="field"><label>配置</label><input id="f-config" placeholder="如 256GB / 16G内存"></div>
 
     <!-- 自定义字段区 -->
-    <div class="field">
-      <label>自定义选项 <button type="button" class="mini-btn" id="add-custom">+ 添加</button></label>
+    <div class="form-group">
+      <div class="form-group-title">自定义选项 <button type="button" class="mini-btn" id="add-custom"><svg class="ic"><use href="#ic-plus"/></svg>添加</button></div>
       <div id="custom-list"></div>
     </div>
 
@@ -128,19 +192,35 @@
 
 <!-- 出售/损坏弹窗 -->
 <div class="modal-mask" id="modal-mask">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <h3 id="modal-title">登记出售</h3>
     <input type="hidden" id="m-id">
-    <div class="field"><label>处理日期</label><input id="m-date" type="date"></div>
+    <div class="field" id="m-status-wrap">
+      <label>处理结果</label>
+      <div class="seg" id="m-status">
+        <button type="button" class="seg-btn active" data-status="sold"><svg class="ic"><use href="#ic-sell"/></svg>已售出 <span class="seg-hint">可回收部分成本</span></button>
+        <button type="button" class="seg-btn" data-status="damaged"><svg class="ic"><use href="#ic-trash"/></svg>已损坏 <span class="seg-hint">计为全额损失</span></button>
+      </div>
+    </div>
+    <div class="field" id="m-date-wrap"><label>处理日期</label><input id="m-date" type="date"></div>
     <div class="field" id="m-price-wrap"><label>出售价格</label><input id="m-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
     <div class="btn-row">
-      <button class="btn primary" id="modal-confirm">确认</button>
       <button class="btn ghost" id="modal-cancel">取消</button>
+      <button class="btn primary" id="modal-confirm">确认</button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- 通用对话框（替代原生 confirm / alert） -->
+<div class="modal-mask" id="dialog-mask">
+  <div class="modal dialog" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title">
+    <h3 id="dialog-title"></h3>
+    <div class="dialog-msg" id="dialog-msg"></div>
+    <div class="btn-row" id="dialog-actions"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="/static/js/echarts.min.js"></script>
 <script src="/static/js/app.js"></script>
