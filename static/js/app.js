@@ -775,9 +775,9 @@ async function loadReport() {
     },
   }));
   getChart("chart-scatter").setOption({
-    grid: { left: 60, right: 30, top: 30, bottom: 40 },
+    grid: { left: 60, right: 24, top: 30, bottom: 52 },
     tooltip: { formatter: (p) => `${p.data.name}<br/>持有：${p.value[0]} 天<br/>日均成本：${fmt(p.value[1])}/天<br/>购入价：${fmt(p.value[2])}` },
-    xAxis: { name: "持有天数", nameTextStyle: { color: "#9aa5bf" }, axisLabel: { color: "#9aa5bf" }, splitLine: { lineStyle: { color: "#2a3554" } } },
+    xAxis: { name: "持有天数", nameLocation: "middle", nameGap: 28, nameTextStyle: { color: "#9aa5bf" }, axisLabel: { color: "#9aa5bf" }, splitLine: { lineStyle: { color: "#2a3554" } } },
     yAxis: { name: "每日成本", nameTextStyle: { color: "#9aa5bf" }, axisLabel: { color: "#9aa5bf" }, splitLine: { lineStyle: { color: "#2a3554" } } },
     series: [{
       type: "scatter", data: scatterData,
