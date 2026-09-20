@@ -45,3 +45,6 @@ desktop.ini
 *.zip
 *.7z
 *.rar
+
+# 本地临时回收目录
+.trash/
