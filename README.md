@@ -150,6 +150,29 @@ asset_tracker/
 └── DOCKER.md               # Docker 使用说明
 ```
 
+### 源文件与生成产物
+
+**纳入版本库的源文件**（手工维护，唯一需要提交的内容）：
+
+- `app.py`、`templates/`、`static/`（含离线 `echarts.min.js`）
+- `build.py`、`build.bat`
+- `Dockerfile`、`docker-compose.yml`、`.dockerignore`、`DOCKER.md`
+- `requirements.txt`、`requirements-docker.txt`、`README.md`、`.gitignore`
+
+**自动生成 / 本地数据，已被 `.gitignore` 忽略，不要提交**：
+
+| 路径 | 说明 | 处理 |
+|---|---|---|
+| `dist/` | 打包输出（exe 在此） | 每次打包生成；分发用 GitHub Release，不入库 |
+| `build/` | PyInstaller 中间缓存 | 可安全删除，打包时自动重建 |
+| `数码资产持有成本管理.spec` | PyInstaller 生成的配置 | 打包时自动重建 |
+| `asset_tracker.db` | 本地数据库（用户数据） | 严禁提交；迁移请复制该文件或用「JSON 导出」 |
+| `asset_tracker.db.backup*` | 打包脚本的临时备份 | 可删除 |
+| `__pycache__/`、`*.pyc` | Python 字节码缓存 | 可删除 |
+| `.venv/`、`venv/` | 虚拟环境 | 不入库 |
+
+> 正常情况下 `git status` 只应显示上面「源文件」的改动。若看到 `dist/`、`build/`、`*.db`、`*.spec` 出现在待提交列表，通常是历史遗留的**已跟踪**文件（`.gitignore` 对已跟踪文件无效），用 `git rm --cached <路径>` 取消跟踪、保留本地文件即可。
+
 ## 数据存储与备份
 
 - 所有数据保存在 `asset_tracker.db`（SQLite 单文件），**删除该文件即清空所有记录**。
