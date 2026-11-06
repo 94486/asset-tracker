@@ -128,9 +128,13 @@ build() {
         --label "org.opencontainers.image.title=数码资产持有成本管理"
         --label "org.opencontainers.image.version=$VERSION")
     [ "$NO_CACHE" = 1 ] && args+=(--no-cache)
-    # 国内网络：用环境变量覆盖基础镜像与 PyPI 源，不必改 Dockerfile
-    [ -n "${BASE_IMAGE:-}" ] && args+=(--build-arg "BASE_IMAGE=$BASE_IMAGE")
-    [ -n "${PIP_INDEX_URL:-}" ] && args+=(--build-arg "PIP_INDEX_URL=$PIP_INDEX_URL")
+    # 国内网络：基础镜像与 PyPI 源可用环境变量覆盖，不必改 Dockerfile。
+    # 实测容器直连 pypi.org 会 Network unreachable（2026-11-06），pip 源默认走清华镜像；
+    # 需要官方源时设 PIP_INDEX_URL=https://pypi.org/simple 覆盖。
+    BASE_IMAGE="${BASE_IMAGE:-}" 
+    PIP_INDEX_URL="${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}"
+    [ -n "$BASE_IMAGE" ] && args+=(--build-arg "BASE_IMAGE=$BASE_IMAGE")
+    [ -n "$PIP_INDEX_URL" ] && args+=(--build-arg "PIP_INDEX_URL=$PIP_INDEX_URL")
     docker "${args[@]}" "$ctx"
 
     local arch

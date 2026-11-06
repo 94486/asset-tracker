@@ -210,6 +210,13 @@ cmd.exe 按系统 OEM 代码页逐行解析批处理。UTF-8 / 纯 LF 会让 `if
 `make-fpk.bat` 的行为：构建镜像 → 容器冒烟 → 导出 tar → 打进 fpk → 打印路径并打开 `dist-fpk`。
 镜像构建失败会停在第一步，不会产出缺镜像的包。
 
+构建脚本内置两条默认（都可用环境变量覆盖）：
+
+- **PyPI 源默认走清华镜像**（`PIP_INDEX_URL`）：容器直连 pypi.org 会 `Network is unreachable`；
+  要官方源时显式设 `PIP_INDEX_URL=https://pypi.org/simple`。
+- **旧版本自动归档**：`build.py` 成功产出当前版后，把 `dist-fpk/` 里其它 `assettracker_*.fpk`
+  挪进 `dist-fpk/old/`，主目录永远只有当前版，避免装错旧包。
+
 ### 5.2 构建镜像（`build-image.sh`）
 
 1. 检查 Docker；守护进程没起来时依次尝试 `systemctl` / `service` / 后台 `dockerd`

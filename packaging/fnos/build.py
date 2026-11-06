@@ -247,6 +247,24 @@ def human(n):
     return f"{n / 1024 / 1024:.1f} MB" if n >= 1024 * 1024 else f"{n / 1024:.0f} KB"
 
 
+def archive_old_versions(target):
+    """把 dist-fpk 里其它版本的 fpk 挪进 old/，主目录只留当前版
+
+    fpk 是自包含大文件（40+ MB），堆在主目录既占眼又容易装错旧版。
+    本包不做处理；挪不动的（被占用等）只告警不阻断。
+    """
+    old_dir = OUT_DIR / "old"
+    for p in OUT_DIR.glob("assettracker_*.fpk"):
+        if p == target:
+            continue
+        old_dir.mkdir(exist_ok=True)
+        try:
+            shutil.move(str(p), str(old_dir / p.name))
+            print(f"     已归档旧版本：old/{p.name}")
+        except OSError as exc:
+            print(f"     [警告] 归档 {p.name} 失败（{exc}），留在原处")
+
+
 def main():
     ap = argparse.ArgumentParser(description="打包飞牛 fnOS fpk（Docker 模式）")
     ap.add_argument("--with-image", nargs="?", const="auto", metavar="TAR",
@@ -273,6 +291,7 @@ def main():
     target = OUT_DIR / f"assettracker_{version}_x86.fpk"
     shutil.copy2(fpk, target)
     size = target.stat().st_size
+    archive_old_versions(target)
 
     if not args.keep_stage:
         shutil.rmtree(STAGE, ignore_errors=True)
