@@ -1,14 +1,31 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>数码资产持有成本管理系统</title>
-<link rel="stylesheet" href="/static/css/style.css">
+<meta name="color-scheme" content="dark light">
+<title>数码资产持有成本管理</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%235b8cff'/%3E%3Cg stroke='%23fff' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M9 21v-5M16 21v-9M23 21v-4'/%3E%3C/g%3E%3C/svg%3E">
+<script>
+  // 尽早应用主题，避免首屏闪白
+  (function () {
+    try {
+      var saved = localStorage.getItem("at-theme");
+      var sys = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", saved || sys);
+      // 行密度与主题一起尽早应用，避免闪动
+      if (localStorage.getItem("at-density") === "compact") {
+        document.documentElement.setAttribute("data-density", "compact");
+      }
+    } catch (e) {}
+  })();
+</script>
+<base href="{{ request.script_root }}/">
+<link rel="stylesheet" href="static/css/style.css?v={{ asset_version }}">
 </head>
 <body>
 
-<!-- ============ SVG 图标精灵（Feather/Lucide 线性风格，currentColor 描边） ============ -->
+<!-- ============ SVG 图标精灵（线性描边，currentColor） ============ -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="ic-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
@@ -20,9 +37,11 @@
     <symbol id="ic-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
     <symbol id="ic-close" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
     <symbol id="ic-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
+    <symbol id="ic-chevron-down" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
     <symbol id="ic-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
     <symbol id="ic-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
     <symbol id="ic-restore" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></symbol>
+    <symbol id="ic-undo" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M3.51 13a9 9 0 1 0 2.13-9.36L3 7"/></symbol>
     <symbol id="ic-sell" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
     <symbol id="ic-box" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></symbol>
     <symbol id="ic-bulb" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></symbol>
@@ -33,7 +52,12 @@
     <symbol id="ic-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
     <symbol id="ic-scatter" viewBox="0 0 24 24"><circle cx="7" cy="14" r="2"/><circle cx="11" cy="7" r="2"/><circle cx="17" cy="12" r="2"/><circle cx="15" cy="17" r="2"/></symbol>
     <symbol id="ic-money" viewBox="0 0 24 24"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></symbol>
+    <symbol id="ic-wallet" viewBox="0 0 24 24"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5z"/><path d="M16 12h5v3h-5a1.5 1.5 0 0 1 0-3z"/></symbol>
     <symbol id="ic-layers" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></symbol>
+    <symbol id="ic-trend-up" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></symbol>
+    <symbol id="ic-trend-down" viewBox="0 0 24 24"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></symbol>
+    <symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="3.5"/><line x1="12" y1="20.5" x2="12" y2="22.5"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="1.5" y1="12" x2="3.5" y2="12"/><line x1="20.5" y1="12" x2="22.5" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></symbol>
+    <symbol id="ic-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
     <symbol id="ic-cat-phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.2"/><line x1="11" y1="18" x2="13" y2="18"/></symbol>
     <symbol id="ic-cat-tablet" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2.2"/><line x1="12" y1="18" x2="12.01" y2="18"/></symbol>
     <symbol id="ic-cat-laptop" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="10" rx="1"/><line x1="2" y1="19" x2="22" y2="19"/></symbol>
@@ -48,7 +72,19 @@
     <symbol id="ic-cat-speaker" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="14" r="3.5"/><line x1="12" y1="6" x2="12.01" y2="6"/></symbol>
     <symbol id="ic-cat-battery" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="10" y1="10" x2="10" y2="14"/></symbol>
     <symbol id="ic-cat-glasses" viewBox="0 0 24 24"><circle cx="6" cy="15" r="3"/><circle cx="18" cy="15" r="3"/><path d="M9 15a3 3 0 0 1 6 0"/><path d="M3 15 4.5 8H7M21 15l-1.5-7H17"/></symbol>
+    <symbol id="ic-cat-nas" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><line x1="7" y1="6.5" x2="7.01" y2="6.5"/><line x1="7" y1="17.5" x2="7.01" y2="17.5"/></symbol>
+    <symbol id="ic-cat-chip" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 2v3M14 2v3M10 19v3M14 19v3M2 10h3M2 14h3M19 10h3M19 14h3"/></symbol>
     <symbol id="ic-github" viewBox="0 0 16 16"><path fill="currentColor" stroke="none" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.05-.13-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.13 1.99.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></symbol>
+    <symbol id="ic-heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+    <symbol id="ic-tag" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></symbol>
+    <symbol id="ic-cart" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></symbol>
+    <symbol id="ic-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></symbol>
+    <symbol id="ic-arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+    <symbol id="ic-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></symbol>
+    <symbol id="ic-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+    <symbol id="ic-hourglass" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12"/><path d="M7 2v4a5 5 0 0 0 5 5 5 5 0 0 0 5-5V2"/><path d="M7 22v-4a5 5 0 0 1 5-5 5 5 0 0 1 5 5v4"/></symbol>
+    <symbol id="ic-dense" viewBox="0 0 24 24"><line x1="3" y1="5" x2="21" y2="5"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="3" y1="20" x2="21" y2="20"/></symbol>
+    <symbol id="ic-kbd" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6.01" y2="10"/><line x1="10" y1="10" x2="10.01" y2="10"/><line x1="14" y1="10" x2="14.01" y2="10"/><line x1="18" y1="10" x2="18.01" y2="10"/><line x1="7" y1="14" x2="17" y2="14"/></symbol>
   </defs>
 </svg>
 
@@ -56,168 +92,702 @@
   <div class="brand">
     <span class="logo"><svg class="ic"><use href="#ic-chart"/></svg></span>
     <div class="brand-text">
-      <h1>数码资产持有成本管理</h1>
-      <p>记录每一次购入，算清每天的持有成本</p>
+      <h1>数码资产持有成本</h1>
+      <p>每一次购入，都算得清每天的代价</p>
     </div>
   </div>
+
+  <nav class="tabs" role="tablist" aria-label="主导航">
+    <button class="tab active" data-tab="assets" role="tab" aria-selected="true">
+      <svg class="ic" aria-hidden="true"><use href="#ic-list"/></svg><span>资产列表</span>
+    </button>
+    <button class="tab" data-tab="report" role="tab" aria-selected="false">
+      <svg class="ic" aria-hidden="true"><use href="#ic-chart"/></svg><span>报表分析</span>
+    </button>
+    <button class="tab" data-tab="wish" role="tab" aria-selected="false">
+      <svg class="ic" aria-hidden="true"><use href="#ic-heart"/></svg><span>预购清单</span>
+      <span class="tab-badge" id="wish-badge" hidden>0</span>
+    </button>
+    <button class="tab" data-tab="forsale" role="tab" aria-selected="false">
+      <svg class="ic" aria-hidden="true"><use href="#ic-tag"/></svg><span>待售清单</span>
+      <span class="tab-badge" id="forsale-badge" hidden>0</span>
+    </button>
+  </nav>
+
   <div class="topbar-actions">
-    <nav class="tabs" role="tablist">
-      <button class="tab active" data-tab="assets" role="tab"><svg class="ic"><use href="#ic-list"/></svg><span>资产列表</span></button>
-      <button class="tab" data-tab="report" role="tab"><svg class="ic"><use href="#ic-chart"/></svg><span>报表分析</span></button>
-    </nav>
+    <button class="ghost-icon" id="density-toggle" title="行密度：舒适 / 紧凑 (D)" aria-label="切换表格行密度">
+      <svg class="ic" aria-hidden="true"><use href="#ic-dense"/></svg>
+    </button>
+    <button class="ghost-icon" id="theme-toggle" title="切换主题 (T)" aria-label="切换明暗主题">
+      <svg class="ic theme-ic-dark"><use href="#ic-sun"/></svg>
+      <svg class="ic theme-ic-light"><use href="#ic-moon"/></svg>
+    </button>
     <a class="gh-btn" href="https://github.com/94486/asset-tracker" target="_blank" rel="noopener noreferrer" title="在 GitHub 查看项目">
-      <svg class="ic"><use href="#ic-github"/></svg><span>GitHub</span>
+      <svg class="ic" aria-hidden="true"><use href="#ic-github"/></svg><span>GitHub</span>
     </a>
   </div>
 </header>
 
 <main>
-  <!-- ============ 资产列表页 ============ -->
-  <section id="tab-assets" class="page active">
+  <!-- ==================== 资产列表 ==================== -->
+  <section id="tab-assets" class="page active" role="tabpanel">
+    <div class="page-head">
+      <div class="page-head-main">
+        <h2>资产列表</h2>
+        <span class="count-pill" id="asset-count">0 件</span>
+      </div>
+      <div class="page-actions">
+        <button class="btn primary sm" id="btn-add">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"/></svg><span>新增资产</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="kpi-strip" id="kpi-strip"></div>
+
     <div class="card list-card">
-      <div class="list-head">
-        <div class="page-title">
-          <h2>资产列表</h2>
-          <span class="count-pill" id="asset-count">0 件</span>
+      <div class="toolbar">
+        <div class="search-box">
+          <svg class="ic search-ic" aria-hidden="true"><use href="#ic-search"/></svg>
+          <input id="filter-kw" placeholder="搜索名称 / 品牌 / 配置…" autocomplete="off" aria-label="搜索资产">
+          <kbd class="search-kbd">/</kbd>
         </div>
-        <div class="toolbar">
-          <div class="search-box">
-            <svg class="ic search-ic"><use href="#ic-search"/></svg>
-            <input id="filter-kw" placeholder="搜索名称 / 品牌 / 配置…" autocomplete="off">
+
+        <div class="chips" id="status-chips" role="group" aria-label="按状态筛选">
+          <button class="chip active" data-status="">全部<span class="chip-n" data-c="all">0</span></button>
+          <button class="chip" data-status="in_use">使用中<span class="chip-n" data-c="in_use">0</span></button>
+          <button class="chip" data-status="for_sale">待售<span class="chip-n" data-c="for_sale">0</span></button>
+          <button class="chip" data-status="sold">已售出<span class="chip-n" data-c="sold">0</span></button>
+          <button class="chip" data-status="damaged">已损坏<span class="chip-n" data-c="damaged">0</span></button>
+        </div>
+
+        <div class="toolbar-right">
+          <div class="select-wrap">
+            <select id="filter-brand" aria-label="按品牌筛选"><option value="">全部品牌</option></select>
           </div>
-          <div class="filter">
-            <div class="select-wrap">
-              <svg class="ic"><use href="#ic-filter"/></svg>
-              <select id="filter-status">
-                <option value="">全部状态</option>
-                <option value="in_use">使用中</option>
-                <option value="sold">已售出</option>
-                <option value="damaged">已损坏</option>
-              </select>
+          <div class="select-wrap">
+            <select id="filter-category" aria-label="按分类筛选"><option value="">全部分类</option></select>
+          </div>
+
+          <div class="menu-wrap">
+            <button class="io-btn" id="btn-export" aria-haspopup="menu" aria-expanded="false">
+              <svg class="ic" aria-hidden="true"><use href="#ic-download"/></svg><span>导出</span>
+              <svg class="ic caret" aria-hidden="true"><use href="#ic-chevron-down"/></svg>
+            </button>
+            <div class="menu" id="export-menu" role="menu">
+              <button class="menu-item" id="btn-export-json" role="menuitem">
+                <svg class="ic" aria-hidden="true"><use href="#ic-download"/></svg>
+                <span class="menu-text"><strong>JSON</strong><em>完整字段，含自定义选项</em></span>
+              </button>
+              <button class="menu-item" id="btn-export-csv" role="menuitem">
+                <svg class="ic" aria-hidden="true"><use href="#ic-grid"/></svg>
+                <span class="menu-text"><strong>CSV</strong><em>Excel 直接打开，含 BOM</em></span>
+              </button>
             </div>
-            <div class="select-wrap"><select id="filter-brand"><option value="">全部品牌</option></select></div>
-            <div class="select-wrap"><select id="filter-category"><option value="">全部分类</option></select></div>
           </div>
-          <div class="io-buttons">
-            <button class="io-btn" id="btn-export-json" title="导出为 JSON 文件"><svg class="ic"><use href="#ic-download"/></svg><span>JSON</span></button>
-            <button class="io-btn" id="btn-export-csv" title="导出为 CSV 文件（Excel 可打开）"><svg class="ic"><use href="#ic-download"/></svg><span>CSV</span></button>
-            <button class="io-btn" id="btn-import" title="导入 JSON 或 CSV 文件"><svg class="ic"><use href="#ic-upload"/></svg><span>导入</span></button>
-            <input type="file" id="import-file" accept=".json,.csv" style="display:none">
+
+          <button class="io-btn" id="btn-import" title="导入 JSON 或 CSV 文件">
+            <svg class="ic" aria-hidden="true"><use href="#ic-upload"/></svg><span>导入</span>
+          </button>
+          <input type="file" id="import-file" accept=".json,.csv" hidden>
+
+          <div class="menu-wrap">
+            <button class="io-btn" id="btn-columns" aria-haspopup="menu" aria-expanded="false" title="选择显示的列">
+              <svg class="ic" aria-hidden="true"><use href="#ic-grid"/></svg><span>列</span>
+              <svg class="ic caret" aria-hidden="true"><use href="#ic-chevron-down"/></svg>
+            </button>
+            <div class="menu menu-cols" id="columns-menu" role="menu"></div>
           </div>
         </div>
       </div>
+
+      <div class="active-filters" id="active-filters" hidden></div>
+
+      <div class="batch-bar" id="batch-bar" hidden></div>
+
       <div class="table-wrap">
         <table id="asset-table">
           <thead>
             <tr>
-              <th class="col-expand"></th>
-              <th class="sortable" data-sort="name">名称</th>
-              <th class="sortable" data-sort="brand">品牌</th>
-              <th class="sortable num" data-sort="price">价格</th>
-              <th class="sortable num" data-sort="purchase_date">购买时间</th>
-              <th class="sortable num" data-sort="days_held">已持有</th>
-              <th class="sortable num" data-sort="daily_cost">每日成本</th>
-              <th class="sortable num" data-sort="profit_loss">盈亏</th>
-              <th class="sortable" data-sort="status">状态</th>
-              <th class="col-ops">操作</th>
+              <th class="col-check" scope="col"><input type="checkbox" id="check-all" aria-label="全选当前页" title="全选当前页"></th>
+              <th class="col-expand" scope="col"><span class="sr-only">展开</span></th>
+              <th class="sortable" data-sort="name" scope="col">名称<span class="sort-arrow"></span></th>
+              <th class="sortable" data-sort="brand" scope="col">品牌<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-sort="price" scope="col">价格<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-sort="purchase_date" scope="col">购买时间<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-sort="days_held" scope="col">已持有<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-sort="daily_cost" scope="col">每日成本<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-sort="profit_loss" scope="col">盈亏<span class="sort-arrow"></span></th>
+              <th class="sortable" data-sort="status" scope="col">状态<span class="sort-arrow"></span></th>
+              <th class="col-ops" scope="col">操作</th>
             </tr>
           </thead>
           <tbody id="asset-body"></tbody>
           <tfoot id="asset-foot"></tfoot>
         </table>
+        <div class="empty" id="empty-tip" hidden></div>
       </div>
-      <div class="empty" id="empty-tip" style="display:none"></div>
+
+      <div class="pager" id="asset-pager" hidden></div>
     </div>
   </section>
 
-  <!-- ============ 报表页 ============ -->
-  <section id="tab-report" class="page">
-    <div class="section-head"><svg class="ic"><use href="#ic-activity"/></svg><h2>总览</h2></div>
+  <!-- ==================== 报表分析 ==================== -->
+  <section id="tab-report" class="page" role="tabpanel">
+    <div class="page-head">
+      <div class="page-head-main">
+        <h2>报表分析</h2>
+        <p class="page-sub">基于全部历史记录，口径为购入价与结算结果</p>
+      </div>
+      <div class="page-actions">
+        <div class="chips range-chips" id="range-chips" role="group" aria-label="统计范围">
+          <button class="chip active" data-range="all">全部</button>
+          <button class="chip" data-range="12m">近 12 个月</button>
+          <button class="chip" data-range="year">本年</button>
+        </div>
+      </div>
+    </div>
+
     <div class="stat-row" id="stat-row"></div>
 
-    <!-- 智能洞察（由 JS 填充） -->
+    <div class="section-head">
+      <svg class="ic" aria-hidden="true"><use href="#ic-bulb"/></svg><h3>智能洞察</h3>
+      <span class="section-note">根据当前数据自动生成</span>
+    </div>
     <div id="insight-box"></div>
 
-    <div class="section-head"><svg class="ic"><use href="#ic-trophy"/></svg><h2>趣味排行</h2></div>
+    <div class="section-head">
+      <svg class="ic" aria-hidden="true"><use href="#ic-trophy"/></svg><h3>趣味排行</h3>
+      <span class="section-note">仅供娱乐，不必当真</span>
+    </div>
     <div class="fun-row" id="fun-row"></div>
 
-    <div class="section-head"><svg class="ic"><use href="#ic-layers"/></svg><h2>数据图表</h2></div>
+    <div class="section-head">
+      <svg class="ic" aria-hidden="true"><use href="#ic-layers"/></svg><h3>数据图表</h3>
+      <span class="section-note" id="chart-note"></span>
+      <span class="section-note chart-link-hint">点击品牌 / 分类 / 散点可跳转筛选</span>
+    </div>
     <div class="chart-grid">
-      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-money"/></svg><h3>每日持有成本排名</h3></div><div class="chart" id="chart-daily"></div></div>
-      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-chart"/></svg><h3>资产折旧排行（已结算）</h3></div><div class="chart" id="chart-dep"></div></div>
-      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-pie"/></svg><h3>品牌投入分布</h3></div><div class="chart" id="chart-brand"></div></div>
-      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-grid"/></svg><h3>分类投入分布</h3></div><div class="chart" id="chart-category"></div></div>
-      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-calendar"/></svg><h3>月度投入趋势</h3></div><div class="chart" id="chart-monthly"></div></div>
-      <div class="card chart-card"><div class="card-head"><svg class="ic"><use href="#ic-scatter"/></svg><h3>资产画像 · 持有天数 vs 每日成本</h3></div><div class="chart" id="chart-scatter"></div></div>
+      <div class="card chart-card wide">
+        <div class="card-head">
+          <svg class="ic" aria-hidden="true"><use href="#ic-activity"/></svg>
+          <h4>累计投入走势</h4>
+          <span class="card-tag">按购入日期累计</span>
+        </div>
+        <div class="chart chart-lg" id="chart-cumulative"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-money"/></svg><h4>每日持有成本排名</h4></div>
+        <div class="chart" id="chart-daily"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-trend-down"/></svg><h4>资产折旧排行</h4><span class="card-tag">已结算</span></div>
+        <div class="chart" id="chart-dep"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-pie"/></svg><h4>品牌投入分布</h4></div>
+        <div class="chart" id="chart-brand"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-grid"/></svg><h4>分类投入分布</h4></div>
+        <div class="chart" id="chart-category"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-calendar"/></svg><h4>月度投入趋势</h4></div>
+        <div class="chart" id="chart-monthly"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head">
+          <svg class="ic" aria-hidden="true"><use href="#ic-scatter"/></svg>
+          <h4>资产画像</h4>
+          <span class="card-tag">气泡大小=购入价</span>
+        </div>
+        <div class="chart" id="chart-scatter"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 预购清单 ==================== -->
+  <section id="tab-wish" class="page" role="tabpanel">
+    <div class="page-head">
+      <div class="page-head-main">
+        <h2>预购清单</h2>
+        <span class="count-pill" id="wish-count">0 项</span>
+        <p class="page-sub">想买但还没买的东西。只记意向，不进成本口径；真正买下时才转入资产列表</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn primary sm" id="btn-add-wish">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"/></svg><span>新增预购</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="board-kpi" id="wish-kpi"></div>
+
+    <div class="card list-card">
+      <div class="toolbar">
+        <div class="search-box">
+          <svg class="ic search-ic" aria-hidden="true"><use href="#ic-search"/></svg>
+          <input id="wish-kw" placeholder="搜索名称 / 品牌 / 渠道…" autocomplete="off" aria-label="搜索预购">
+        </div>
+        <div class="chips" id="wish-chips" role="group" aria-label="按状态筛选">
+          <button class="chip active" data-wstatus="">全部<span class="chip-n" data-wc="all">0</span></button>
+          <button class="chip" data-wstatus="watching">观望中<span class="chip-n" data-wc="watching">0</span></button>
+          <button class="chip" data-wstatus="ready">待下手<span class="chip-n" data-wc="ready">0</span></button>
+          <button class="chip" data-wstatus="converted">已转化<span class="chip-n" data-wc="converted">0</span></button>
+          <button class="chip" data-wstatus="dropped">已放弃<span class="chip-n" data-wc="dropped">0</span></button>
+        </div>
+        <div class="toolbar-right">
+          <div class="select-wrap">
+            <select id="wish-priority" aria-label="按优先级筛选">
+              <option value="">全部优先级</option>
+              <option value="high">很想要</option>
+              <option value="normal">一般</option>
+              <option value="low">观望</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="wish-table">
+          <thead>
+            <tr>
+              <th class="sortable" data-wsort="name" scope="col">名称<span class="sort-arrow"></span></th>
+              <th class="sortable" data-wsort="brand" scope="col">品牌<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-wsort="target_price" scope="col">心理价<span class="sort-arrow"></span></th>
+              <th class="sortable" data-wsort="priority" scope="col">优先级<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-wsort="expected_date" scope="col">计划入手<span class="sort-arrow"></span></th>
+              <th class="sortable" data-wsort="source" scope="col">渠道<span class="sort-arrow"></span></th>
+              <th class="sortable" data-wsort="status" scope="col">状态<span class="sort-arrow"></span></th>
+              <th class="col-ops" scope="col">操作</th>
+            </tr>
+          </thead>
+          <tbody id="wish-body"></tbody>
+          <tfoot id="wish-foot"></tfoot>
+        </table>
+        <div class="empty" id="wish-empty" hidden></div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <svg class="ic" aria-hidden="true"><use href="#ic-heart"/></svg><h3>预购看板</h3>
+      <span class="section-note">预算与决策去向</span>
+    </div>
+    <div class="chart-grid">
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-wallet"/></svg><h4>预算占用 Top</h4><span class="card-tag">未购买</span></div>
+        <div class="chart" id="chart-wish-top"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-flag"/></svg><h4>优先级构成</h4></div>
+        <div class="chart" id="chart-wish-prio"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-grid"/></svg><h4>分类预算分布</h4></div>
+        <div class="chart" id="chart-wish-cat"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-calendar"/></svg><h4>计划入手月份</h4><span class="card-tag">按预计日期</span></div>
+        <div class="chart" id="chart-wish-plan"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 待售清单 ==================== -->
+  <section id="tab-forsale" class="page" role="tabpanel">
+    <div class="page-head">
+      <div class="page-head-main">
+        <h2>待售清单</h2>
+        <span class="count-pill" id="forsale-count">0 件</span>
+        <p class="page-sub">已经挂出去、还没卖掉的东西。它们仍算持有资产，每日成本继续累加</p>
+      </div>
+      <div class="page-actions">
+        <button class="btn ghost sm" id="btn-pick-forsale">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"/></svg><span>从资产中选择</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="board-kpi" id="forsale-kpi"></div>
+
+    <div class="card list-card">
+      <div class="toolbar">
+        <div class="search-box">
+          <svg class="ic search-ic" aria-hidden="true"><use href="#ic-search"/></svg>
+          <input id="forsale-kw" placeholder="搜索名称 / 品牌…" autocomplete="off" aria-label="搜索待售">
+        </div>
+        <div class="chips" id="forsale-chips" role="group" aria-label="按挂单时长筛选">
+          <button class="chip active" data-fage="">全部<span class="chip-n" data-fc="all">0</span></button>
+          <button class="chip" data-fage="fresh">一周内<span class="chip-n" data-fc="fresh">0</span></button>
+          <button class="chip" data-fage="mid">8-30 天<span class="chip-n" data-fc="mid">0</span></button>
+          <button class="chip" data-fage="stale">30 天以上<span class="chip-n" data-fc="stale">0</span></button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="forsale-table">
+          <thead>
+            <tr>
+              <th class="sortable" data-fsort="name" scope="col">名称<span class="sort-arrow"></span></th>
+              <th class="sortable" data-fsort="brand" scope="col">品牌<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-fsort="price" scope="col">购入价<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-fsort="list_price" scope="col">挂单价<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-fsort="list_pnl" scope="col">预期盈亏<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-fsort="days_listed" scope="col">已挂<span class="sort-arrow"></span></th>
+              <th class="sortable num" data-fsort="daily_cost" scope="col">每日成本<span class="sort-arrow"></span></th>
+              <th class="col-ops" scope="col">操作</th>
+            </tr>
+          </thead>
+          <tbody id="forsale-body"></tbody>
+          <tfoot id="forsale-foot"></tfoot>
+        </table>
+        <div class="empty" id="forsale-empty" hidden></div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <svg class="ic" aria-hidden="true"><use href="#ic-tag"/></svg><h3>待售看板</h3>
+      <span class="section-note">压货与回血预期</span>
+    </div>
+    <div class="chart-grid">
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-clock"/></svg><h4>挂单时长分布</h4><span class="card-tag">超 30 天为滞销</span></div>
+        <div class="chart" id="chart-fs-age"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-hourglass"/></svg><h4>压货最久 Top</h4></div>
+        <div class="chart" id="chart-fs-old"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-layers"/></svg><h4>分类压货结构</h4></div>
+        <div class="chart" id="chart-fs-cat"></div>
+      </div>
+      <div class="card chart-card">
+        <div class="card-head"><svg class="ic" aria-hidden="true"><use href="#ic-money"/></svg><h4>成本 vs 报价</h4><span class="card-tag">按件对比</span></div>
+        <div class="chart" id="chart-fs-cmp"></div>
+      </div>
     </div>
   </section>
 </main>
 
-<!-- 浮动新增按钮 -->
+<!-- 浮动新增按钮（窄屏优先，桌面端也有快捷入口） -->
 <button class="fab" id="fab-add" title="新增资产 (N)" aria-label="新增资产"><svg class="ic"><use href="#ic-plus"/></svg></button>
 
-<!-- 右侧抽屉：录入/编辑表单 -->
+<!-- ==================== 右侧抽屉：录入 / 编辑 ==================== -->
 <div class="drawer-mask" id="drawer-mask"></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="form-title">
   <div class="drawer-head">
-    <h2 id="form-title">录入新资产</h2>
-    <button class="drawer-close" id="drawer-close" title="关闭 (Esc)" aria-label="关闭"><svg class="ic"><use href="#ic-close"/></svg></button>
+    <div>
+      <h2 id="form-title">录入新资产</h2>
+      <p class="drawer-sub" id="form-sub">填写名称、价格与购买日期，成本会实时算出</p>
+    </div>
+    <button class="ghost-icon" id="drawer-close" title="关闭 (Esc)" aria-label="关闭">
+      <svg class="ic"><use href="#ic-close"/></svg>
+    </button>
   </div>
+
   <div class="drawer-body">
     <input type="hidden" id="f-id">
-    <div class="form-group">
-      <div class="form-group-title">基本信息</div>
-      <div class="field"><label>名称 <span class="req">*</span></label><input id="f-name" placeholder="如 iPhone 15 Pro"></div>
-      <div class="row">
-        <div class="field"><label>品牌</label><input id="f-brand" placeholder="如 Apple"></div>
-        <div class="field"><label>分类</label><input id="f-category" placeholder="如 手机"></div>
+
+    <!-- 实时成本预览 -->
+    <div class="cost-preview" id="cost-preview">
+      <div class="cp-main">
+        <span class="cp-label">每日持有成本</span>
+        <strong class="cp-value" id="cp-daily">—</strong>
+      </div>
+      <div class="cp-extra">
+        <span>已持有 <b id="cp-days">—</b> 天</span>
+        <span class="cp-sep"></span>
+        <span>年化约 <b id="cp-year">—</b></span>
       </div>
     </div>
+
+    <div class="form-group">
+      <div class="form-group-title">基本信息</div>
+      <div class="field">
+        <label for="f-name">名称 <span class="req">*</span></label>
+        <input id="f-name" placeholder="如 iPhone 15 Pro" maxlength="120">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="f-brand">品牌</label>
+          <input id="f-brand" placeholder="如 Apple" list="brand-options" maxlength="60">
+        </div>
+        <div class="field">
+          <label for="f-category">分类</label>
+          <input id="f-category" placeholder="如 手机" list="category-options" maxlength="60">
+        </div>
+      </div>
+      <datalist id="brand-options"></datalist>
+      <datalist id="category-options"></datalist>
+    </div>
+
     <div class="form-group">
       <div class="form-group-title">购入信息</div>
       <div class="row">
-        <div class="field"><label>购买价格 <span class="req">*</span></label><input id="f-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
-        <div class="field"><label>购买时间 <span class="req">*</span></label><input id="f-pdate" type="date"></div>
+        <div class="field">
+          <label for="f-price">购买价格 <span class="req">*</span></label>
+          <div class="input-affix"><span>¥</span><input id="f-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
+        </div>
+        <div class="field">
+          <label for="f-pdate">购买时间 <span class="req">*</span></label>
+          <input id="f-pdate" type="date">
+        </div>
       </div>
-      <div class="field"><label>配置</label><input id="f-config" placeholder="如 256GB / 16G内存"></div>
+      <div class="field">
+        <label for="f-config">配置</label>
+        <input id="f-config" placeholder="如 256GB / 16G 内存" maxlength="120">
+      </div>
     </div>
 
-    <!-- 自定义字段区 -->
     <div class="form-group">
-      <div class="form-group-title">自定义选项 <button type="button" class="mini-btn" id="add-custom"><svg class="ic"><use href="#ic-plus"/></svg>添加</button></div>
+      <div class="form-group-title">
+        自定义选项
+        <button type="button" class="mini-btn" id="add-custom">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"/></svg>添加
+        </button>
+      </div>
       <div id="custom-list"></div>
+      <p class="form-hint" id="custom-hint">可记录保修期、序列号、成色等任意字段</p>
     </div>
 
-    <div class="field"><label>备注</label><textarea id="f-notes" rows="3" placeholder="可选"></textarea></div>
+    <div class="field">
+      <label for="f-notes">备注</label>
+      <textarea id="f-notes" rows="3" placeholder="可选"></textarea>
+    </div>
   </div>
+
   <div class="drawer-foot">
     <button class="btn ghost" id="btn-reset">重置</button>
     <button class="btn primary" id="btn-save">保存</button>
   </div>
 </aside>
 
-<!-- 出售/损坏弹窗 -->
+<!-- ==================== 出售 / 损坏弹窗 ==================== -->
 <div class="modal-mask" id="modal-mask">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <h3 id="modal-title">登记出售</h3>
+    <div class="modal-head">
+      <h3 id="modal-title">登记处理</h3>
+      <button class="ghost-icon sm" id="modal-x" aria-label="关闭">
+        <svg class="ic"><use href="#ic-close"/></svg>
+      </button>
+    </div>
     <input type="hidden" id="m-id">
+
+    <div class="modal-summary" id="modal-summary"></div>
+
     <div class="field" id="m-status-wrap">
       <label>处理结果</label>
       <div class="seg" id="m-status">
-        <button type="button" class="seg-btn active" data-status="sold"><svg class="ic"><use href="#ic-sell"/></svg>已售出 <span class="seg-hint">可回收部分成本</span></button>
-        <button type="button" class="seg-btn" data-status="damaged"><svg class="ic"><use href="#ic-trash"/></svg>已损坏 <span class="seg-hint">计为全额损失</span></button>
+        <button type="button" class="seg-btn active" data-status="sold">
+          <svg class="ic" aria-hidden="true"><use href="#ic-sell"/></svg>
+          <strong>已售出</strong><span class="seg-hint">可回收部分成本</span>
+        </button>
+        <button type="button" class="seg-btn" data-status="damaged">
+          <svg class="ic" aria-hidden="true"><use href="#ic-trash"/></svg>
+          <strong>已损坏</strong><span class="seg-hint">计为全额损失</span>
+        </button>
       </div>
     </div>
-    <div class="field" id="m-date-wrap"><label>处理日期</label><input id="m-date" type="date"></div>
-    <div class="field" id="m-price-wrap"><label>出售价格</label><input id="m-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
+    <div class="row">
+      <div class="field" id="m-date-wrap">
+        <label for="m-date">处理日期</label>
+        <input id="m-date" type="date">
+      </div>
+      <div class="field" id="m-price-wrap">
+        <label for="m-price">出售价格</label>
+        <div class="input-affix"><span>¥</span><input id="m-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
+      </div>
+    </div>
+
+    <div class="settle-preview" id="settle-preview"></div>
+
     <div class="btn-row">
       <button class="btn ghost" id="modal-cancel">取消</button>
-      <button class="btn primary" id="modal-confirm">确认</button>
+      <button class="btn primary" id="modal-confirm">确认登记</button>
     </div>
   </div>
 </div>
 
-<!-- 通用对话框（替代原生 confirm / alert） -->
+<!-- ==================== 预购抽屉：录入 / 编辑 ==================== -->
+<div class="drawer-mask" id="wish-drawer-mask"></div>
+<aside class="drawer" id="wish-drawer" role="dialog" aria-modal="true" aria-labelledby="wish-form-title">
+  <div class="drawer-head">
+    <div>
+      <h2 id="wish-form-title">新增预购</h2>
+      <p class="drawer-sub" id="wish-form-sub">先记下想买什么、大概多少钱，买的时候一键转入资产</p>
+    </div>
+    <button class="ghost-icon" id="wish-drawer-close" title="关闭 (Esc)" aria-label="关闭">
+      <svg class="ic"><use href="#ic-close"/></svg>
+    </button>
+  </div>
+
+  <div class="drawer-body">
+    <input type="hidden" id="w-id">
+
+    <div class="wish-preview" id="wish-preview">
+      <div class="cp-main">
+        <span class="cp-label">预算占位</span>
+        <strong class="cp-value" id="wp-budget">—</strong>
+      </div>
+      <div class="cp-extra">
+        <span id="wp-wait">未设计划日期</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-group-title">想买什么</div>
+      <div class="field">
+        <label for="w-name">名称 <span class="req">*</span></label>
+        <input id="w-name" placeholder="如 ROG Ally 2" maxlength="120">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="w-brand">品牌</label>
+          <input id="w-brand" placeholder="如 ASUS" list="brand-options" maxlength="60">
+        </div>
+        <div class="field">
+          <label for="w-category">分类</label>
+          <input id="w-category" placeholder="如 掌机" list="category-options" maxlength="60">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-group-title">预算与计划</div>
+      <div class="row">
+        <div class="field">
+          <label for="w-price">预期价格</label>
+          <div class="input-affix"><span>¥</span><input id="w-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
+        </div>
+        <div class="field">
+          <label for="w-edate">计划入手</label>
+          <input id="w-edate" type="date">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="w-priority">优先级</label>
+          <select id="w-priority">
+            <option value="high">很想要 · 优先考虑</option>
+            <option value="normal" selected>一般</option>
+            <option value="low">观望 · 等降价</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="w-source">渠道</label>
+          <input id="w-source" placeholder="如 京东 / 闲鱼 / 官网" maxlength="60">
+        </div>
+
+        <div class="field span-2">
+          <label for="w-config">参数 / 规格</label>
+          <input id="w-config" placeholder="如 16G+512G / 国行 / 双盘位" maxlength="120">
+        </div>
+      </div>
+      <div class="field">
+        <label for="w-status">状态</label>
+        <select id="w-status">
+          <option value="watching" selected>观望中</option>
+          <option value="ready">待下手 · 准备买</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-group-title">
+        自定义选项
+        <button type="button" class="mini-btn" id="w-add-custom">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"/></svg>添加
+        </button>
+      </div>
+      <div id="w-custom-list"></div>
+      <p class="form-hint" id="w-custom-hint">可记录配置预期、目标版本、保修要求等</p>
+    </div>
+
+    <div class="field">
+      <label for="w-notes">备注</label>
+      <textarea id="w-notes" rows="3" placeholder="为什么想买、在等什么价…"></textarea>
+    </div>
+  </div>
+
+  <div class="drawer-foot">
+    <button class="btn ghost" id="wish-btn-reset">重置</button>
+    <button class="btn primary" id="wish-btn-save">保存</button>
+  </div>
+</aside>
+
+<!-- ==================== 转化预购弹窗 ==================== -->
+<div class="modal-mask" id="convert-mask">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="convert-title">
+    <div class="modal-head">
+      <h3 id="convert-title">转为正式资产</h3>
+      <button class="ghost-icon sm" id="convert-x" aria-label="关闭">
+        <svg class="ic"><use href="#ic-close"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="cv-id">
+
+    <div class="modal-summary" id="convert-summary"></div>
+
+    <div class="row">
+      <div class="field">
+        <label for="cv-date">实际购买时间 <span class="req">*</span></label>
+        <input id="cv-date" type="date">
+      </div>
+      <div class="field">
+        <label for="cv-price">实际成交价 <span class="req">*</span></label>
+        <div class="input-affix"><span>¥</span><input id="cv-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
+      </div>
+    </div>
+    <div class="field">
+      <label for="cv-config">配置</label>
+      <input id="cv-config" placeholder="如 32G+1T" maxlength="120">
+    </div>
+
+    <div class="settle-preview" id="convert-preview"></div>
+
+    <div class="btn-row">
+      <button class="btn ghost" id="convert-cancel">取消</button>
+      <button class="btn primary" id="convert-confirm">确认转入资产</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 挂入待售弹窗 ==================== -->
+<div class="modal-mask" id="list-mask">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="list-title">
+    <div class="modal-head">
+      <h3 id="list-title">挂入待售清单</h3>
+      <button class="ghost-icon sm" id="list-x" aria-label="关闭">
+        <svg class="ic"><use href="#ic-close"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="ls-id">
+
+    <div class="modal-summary" id="list-summary"></div>
+
+    <div class="row">
+      <div class="field">
+        <label for="ls-date">上架日期</label>
+        <input id="ls-date" type="date">
+      </div>
+      <div class="field">
+        <label for="ls-price">挂单报价</label>
+        <div class="input-affix"><span>¥</span><input id="ls-price" type="number" min="0" step="0.01" placeholder="0.00"></div>
+      </div>
+    </div>
+
+    <div class="settle-preview" id="list-preview"></div>
+
+    <div class="btn-row">
+      <button class="btn ghost" id="list-cancel">取消</button>
+      <button class="btn primary" id="list-confirm">确认挂售</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 通用对话框 ==================== -->
 <div class="modal-mask" id="dialog-mask">
   <div class="modal dialog" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title">
     <h3 id="dialog-title"></h3>
@@ -226,9 +796,36 @@
   </div>
 </div>
 
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span class="toast-msg" id="toast-msg"></span>
+  <button class="toast-action" id="toast-action" hidden></button>
+</div>
 
-<script src="/static/js/echarts.min.js"></script>
-<script src="/static/js/app.js"></script>
+<!-- 键盘快捷键帮助（按 ? 呼出） -->
+<div class="help-mask" id="help-mask" hidden>
+  <div class="help-card" role="dialog" aria-modal="true" aria-label="键盘快捷键">
+    <div class="help-head">
+      <h3><svg class="ic" aria-hidden="true"><use href="#ic-kbd"/></svg>键盘快捷键</h3>
+      <button class="ghost-icon sm" id="help-close" aria-label="关闭">
+        <svg class="ic" aria-hidden="true"><use href="#ic-close"/></svg>
+      </button>
+    </div>
+    <dl class="help-list">
+      <div><dt><kbd>N</kbd></dt><dd>新增（当前页签对应类型）</dd></div>
+      <div><dt><kbd>/</kbd></dt><dd>聚焦搜索框</dd></div>
+      <div><dt><kbd>L</kbd> <kbd>R</kbd> <kbd>W</kbd> <kbd>S</kbd></dt><dd>切换 列表 / 报表 / 预购 / 待售</dd></div>
+      <div><dt><kbd>E</kbd></dt><dd>打开导出菜单</dd></div>
+      <div><dt><kbd>T</kbd></dt><dd>明暗主题</dd></div>
+      <div><dt><kbd>D</kbd></dt><dd>表格行密度（舒适 / 紧凑）</dd></div>
+      <div><dt><kbd>Esc</kbd></dt><dd>关闭弹窗、菜单与提示</dd></div>
+      <div><dt><kbd>?</kbd></dt><dd>显示本帮助</dd></div>
+    </dl>
+    <p class="help-tip">统计卡也可以点：持有总额、盈亏会联动下方筛选，每日成本直达报表。</p>
+  </div>
+</div>
+
+<script src="static/js/echarts.min.js"></script>
+<script src="static/js/util.js?v={{ asset_version }}"></script>
+<script src="static/js/app.js?v={{ asset_version }}"></script>
 </body>
 </html>

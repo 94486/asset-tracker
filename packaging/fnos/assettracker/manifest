@@ -1,0 +1,15 @@
+appname               = assettracker
+version               = {{VERSION}}
+display_name          = 数码资产持有成本管理
+desc                  = <p>记录数码产品购入、每日持有成本、出售与折旧分析的本地工具。</p><p>数据保存在 NAS 本地 SQLite，多设备通过浏览器访问；支持出售/损坏结算、预购与待售清单、报表与导入导出。</p>
+platform              = x86
+source                = thirdparty
+maintainer            = 94486
+maintainer_url        = https://github.com/94486/asset-tracker
+distributor           = 94486
+desktop_uidir         = ui
+desktop_applaunchname = assettracker.Application
+service_port          = 5678
+checkport             = false
+micro_app             = true
+ctl_stop              = true

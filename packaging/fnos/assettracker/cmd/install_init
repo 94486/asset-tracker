@@ -1,0 +1,7 @@
+#!/bin/bash
+# 安装前：确认 Docker 可用（本应用以容器方式运行）
+if ! command -v docker >/dev/null 2>&1; then
+    echo "未检测到 Docker，无法安装该应用。" > "$TRIM_TEMP_LOGFILE"
+    exit 1
+fi
+exit 0

@@ -1,0 +1,13 @@
+{
+    ".url": {
+        "assettracker.Application": {
+            "title": "数码资产持有成本管理",
+            "icon": "images/icon_{0}.png",
+            "type": "iframe",
+            "gatewayPrefix": "/app/assettracker",
+            "gatewaySocket": "app.sock",
+            "url": "/app/assettracker/",
+            "allUsers": true
+        }
+    }
+}

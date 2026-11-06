@@ -1,0 +1,4 @@
+#!/bin/bash
+# 卸载前：停止并删除容器；数据保存在 shares 目录，默认不删。
+docker rm -f assettracker >/dev/null 2>&1 || true
+exit 0

@@ -1,0 +1,37 @@
+#!/bin/bash
+# 安装后：确认镜像存在；包里带了离线镜像就自动导入。
+# 镜像缺失不阻断安装，但会把原因写进安装日志，避免启动时只看到 registry 超时。
+IMAGE="${ASSET_TRACKER_IMAGE:-assettracker:{{VERSION}}}"
+TAR="${TRIM_APPDEST}/docker/assettracker-image.tar"
+LOG="$TRIM_TEMP_LOGFILE"
+
+docker image inspect "$IMAGE" >/dev/null 2>&1 && exit 0
+
+if [ -f "$TAR" ]; then
+    # docker load 能识别纯 tar 与 gzip/xz 压缩流，先直接试
+    if docker load -i "$TAR" >/dev/null 2>&1 \
+        || { command -v gunzip >/dev/null 2>&1 && gunzip -c "$TAR" 2>/dev/null | docker load >/dev/null 2>&1; }; then
+        # 镜像 tag 与 manifest 版本不一致时补别名，否则 compose 找不到镜像
+        if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+            CAND=$(docker images --format '{{.Repository}}:{{.Tag}}' 2>/dev/null | grep '^assettracker:' | head -1)
+            [ -n "$CAND" ] && docker tag "$CAND" "$IMAGE" >/dev/null 2>&1
+        fi
+        docker image inspect "$IMAGE" >/dev/null 2>&1 && exit 0
+        echo "离线镜像已导入，但 tag 不是 $IMAGE，自动补别名失败。请手动执行：docker tag <已有tag> $IMAGE" > "$LOG"
+        exit 0
+    fi
+    echo "离线镜像导入失败（tar 损坏或 Docker 磁盘已满）。可手动执行：docker load -i $TAR" > "$LOG"
+    exit 0
+fi
+
+cat > "$LOG" <<EOF
+这个安装包没有内置镜像（约 20KB 的"壳"），而本机也没有 $IMAGE。
+应用启动时会去 Docker Hub 拉取并超时，表现为「assettracker Pulling ... Client.Timeout」。
+
+二选一：
+1) 换用带镜像的安装包（make-fpk.bat 生成的约 60MB 版本），重新安装；
+2) 或者先在本机准备镜像，再启动应用：
+   docker load -i <assettracker-image.tar>
+   docker tag assettracker:{{VERSION}} $IMAGE
+EOF
+exit 0

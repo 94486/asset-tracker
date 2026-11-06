@@ -1,0 +1,3 @@
+#!/bin/bash
+# 卸载完成：用户数据保留在 /var/apps/assettracker/shares/assettracker/data
+exit 0

@@ -1,0 +1,11 @@
+# 换行符策略：Windows 批处理必须 CRLF，否则 cmd.exe 的多行块会解析失败；
+# WSL / Linux 侧的 shell 脚本必须 LF，否则 bash 报 "bad interpreter"。
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.sh   text eol=lf
+*.py   text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.fpk  binary
+*.ico  binary
+*.png  binary

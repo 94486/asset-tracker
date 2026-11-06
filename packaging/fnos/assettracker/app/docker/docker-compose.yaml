@@ -1,0 +1,19 @@
+services:
+  assettracker:
+    image: ${ASSET_TRACKER_IMAGE:-assettracker:{{VERSION}}}
+    # 镜像随 fpk 提供（install_callback 里 docker load），禁止再去 registry 拉。
+    # 不加这行时，镜像没 load 成功的机器会看到 "assettracker Pulling ... Client.Timeout"，
+    # 安装会直接中止。
+    pull_policy: never
+    container_name: assettracker
+    restart: unless-stopped
+    ports:
+      - "${TRIM_SERVICE_PORT:-5678}:5678"
+    volumes:
+      # 仅本地调试用；fnOS 上由 cmd/main 用 ${TRIM_PKGVAR}/data 挂载
+      - "${TRIM_PKGVAR:-./data}:/data"
+    environment:
+      - DATA_DIR=/data
+      - PORT=5678
+      - HEADLESS=1
+      - TZ=Asia/Shanghai

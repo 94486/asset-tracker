@@ -1,0 +1,129 @@
+#!/bin/bash
+# fnOS 生命周期脚本：本应用自带 Docker 容器，**不使用 docker-project 资源**。
+#
+# 为什么：docker-project 会让 fnOS 在安装阶段就执行 compose up，
+# 而那时内置镜像还没 docker load，必然报
+#   Container assettracker Error ... No such image: assettracker:1.0.0
+#
+# 所以这里在 start 阶段接管：按需 load 内置镜像 → docker run。
+# 退出码约定：0 = 正常/运行中，1 = 出错，3 = 未运行（status）。
+set +e
+
+CONTAINER="assettracker"
+IMAGE="assettracker:{{VERSION}}"
+# 端口：fnOS 注入的 TRIM_SERVICE_PORT，缺省 5678
+PORT="${TRIM_SERVICE_PORT:-5678}"
+DATA_DIR="${TRIM_PKGVAR:-/var/lib/assettracker}/data"
+TAR="${TRIM_APPDEST}/docker/assettracker-image.tar"
+LOG="${TRIM_PKGVAR:-/tmp}/main.log"
+MARKER="${TRIM_PKGVAR:-/tmp}/image.marker"
+
+log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" >> "$LOG" 2>&1; }
+
+fail() {
+    log "ERROR: $*"
+    echo "assettracker: $*" > "${TRIM_TEMP_LOGFILE:-/dev/null}" 2>/dev/null
+    exit 1
+}
+
+is_running() {
+    docker inspect -f '{{.State.Running}}' "$CONTAINER" 2>/dev/null | grep -q true
+}
+
+# 内置镜像：用 tar 的 大小_修改时间 做标记，避免每次 status 轮询都重新 load
+ensure_image() {
+    if [ ! -f "$TAR" ]; then
+        docker image inspect "$IMAGE" >/dev/null 2>&1 && return 0
+        fail "本机没有 $IMAGE，包内也没有 $TAR（是不是装成了 20KB 的空壳包？）"
+    fi
+
+    local want marker
+    want="$(stat -c '%s_%Y' "$TAR" 2>/dev/null)"
+    marker="$(cat "$MARKER" 2>/dev/null)"
+    if [ -n "$want" ] && [ "$marker" = "$want" ] && docker image inspect "$IMAGE" >/dev/null 2>&1; then
+        return 0
+    fi
+
+    log "docker load $TAR"
+    docker load -i "$TAR" >> "$LOG" 2>&1
+    log "docker load exit=$?"
+
+    if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+        # 打包时 tag 与版本不一致的兜底：从已有 assettracker:* 里挑一个补别名
+        local cand
+        cand="$(docker images --format '{{.Repository}}:{{.Tag}}' 2>/dev/null | grep '^assettracker:' | head -1)"
+        [ -n "$cand" ] && docker tag "$cand" "$IMAGE" >/dev/null 2>&1
+    fi
+
+    docker image inspect "$IMAGE" >/dev/null 2>&1 || fail "加载后仍找不到 $IMAGE，详情见 $LOG"
+    [ -n "$want" ] && echo "$want" > "$MARKER"
+    return 0
+}
+
+start() {
+    if is_running; then
+        log "already running"
+        exit 0
+    fi
+    docker rm -f "$CONTAINER" >/dev/null 2>&1
+    ensure_image || exit 1
+    mkdir -p "$DATA_DIR"
+
+    # bridge + 端口映射：容器内固定 5678，映射到宿主机 5678。
+    # 实测：图标（网关 socket）与 Docker 页的「远程访问」按钮都依赖这一形态；
+    # host 网络没有发布端口，按钮不会出现。
+    # 注意：不要引入 wizard_port——那次同时改了端口来源，导致图标失效，难以定位。
+    log "=== start === port=$PORT apdest=${TRIM_APPDEST:-unset} pkgvar=${TRIM_PKGVAR:-unset} arch=${TRIM_SYS_ARCH:-unset} ver=${TRIM_APPVER:-unset}"
+    # 统一网关：把应用目录挂进容器，socket 落在 ${TRIM_APPDEST}/app.sock，
+    # 与 ui/config 的 gatewaySocket 对应；桌面（含 FN Connect 远程）走这条。
+    docker run -d \
+        --name "$CONTAINER" \
+        --restart unless-stopped \
+        -p "5678:5678" \
+        -e DATA_DIR=/data \
+        -e HEADLESS=1 \
+        -e PORT=5678 \
+        -e GATEWAY_SOCKET=/gw/app.sock \
+        -e TZ=Asia/Shanghai \
+        -v "${DATA_DIR}:/data" \
+        -v "${TRIM_APPDEST}:/gw" \
+        "$IMAGE" >> "$LOG" 2>&1
+
+    # 等它真的能应答，而不是只看容器在不在（起来了但崩掉也会被当成 ok）
+    local i ready=0
+    for i in $(seq 1 20); do
+        is_running || break
+        if command -v curl >/dev/null 2>&1; then
+            curl -fsS "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1 && { ready=1; break; }
+        else
+            ready=1
+            break
+        fi
+        sleep 1
+    done
+    log "health ready=$ready"
+
+    if is_running && [ "$ready" = "1" ]; then
+        log "started ok"
+        exit 0
+    fi
+
+    # 失败时把容器日志一起留下来，方便在应用中心/SSH 里定位
+    log "container logs:"
+    docker logs --tail 40 "$CONTAINER" >> "$LOG" 2>&1
+    fail "容器没起来或没应答（port=$PORT），详情见 $LOG"
+}
+
+stop() {
+    log "stop"
+    docker stop "$CONTAINER" >> "$LOG" 2>&1
+    docker rm -f "$CONTAINER" >> "$LOG" 2>&1
+    exit 0
+}
+
+case "$1" in
+    start)  start ;;
+    stop)   stop ;;
+    status) is_running && exit 0 || exit 3 ;;
+    *)      echo "unknown command: $1" >&2; exit 1 ;;
+esac

@@ -1,0 +1,787 @@
+{
+  "total": 156,
+  "failed": 0,
+  "results": [
+    {
+      "name": "首页 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "首页含标题",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "/static/css/style.css 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "/static/css/style.css 非空",
+      "ok": true,
+      "detail": "65532"
+    },
+    {
+      "name": "/static/js/app.js 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "/static/js/app.js 非空",
+      "ok": true,
+      "detail": "138974"
+    },
+    {
+      "name": "/static/js/echarts.min.js 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "/static/js/echarts.min.js 非空",
+      "ok": true,
+      "detail": "1029203"
+    },
+    {
+      "name": "favicon 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "初始列表为空",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "创建资产",
+      "ok": true,
+      "detail": "{'ok': True, 'id': 1}"
+    },
+    {
+      "name": "列表 1 条",
+      "ok": true,
+      "detail": "1"
+    },
+    {
+      "name": "days_held=100",
+      "ok": true,
+      "detail": "100"
+    },
+    {
+      "name": "daily_cost=90",
+      "ok": true,
+      "detail": "90.0"
+    },
+    {
+      "name": "自定义字段还原",
+      "ok": true,
+      "detail": "{'颜色': '蓝色'}"
+    },
+    {
+      "name": "未结算无盈亏",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "校验-空名称 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "校验-负价格 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "校验-价格非数字 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "校验-价格过大 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "校验-未来购买日 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "校验-非法日期 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "校验-缺购买日 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "校验-名称 121 字 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "校验-名称 120 字 -> 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "更新资产",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "更新不存在 404",
+      "ok": true,
+      "detail": "404"
+    },
+    {
+      "name": "非法 JSON 体不崩",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "登记出售",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "售出 days_held=90",
+      "ok": true,
+      "detail": "90"
+    },
+    {
+      "name": "售出 最终日均=11.11",
+      "ok": true,
+      "detail": "11.11"
+    },
+    {
+      "name": "售出 盈亏=-1000",
+      "ok": true,
+      "detail": "-1000.0"
+    },
+    {
+      "name": "售出 折旧=1000",
+      "ok": true,
+      "detail": "1000.0"
+    },
+    {
+      "name": "处理日早于购买日 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "处理日晚于今天 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "非法状态 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "当日买卖 days_held=1（不除零）",
+      "ok": true,
+      "detail": "1"
+    },
+    {
+      "name": "当日买卖 最终日均=100",
+      "ok": true,
+      "detail": "100.0"
+    },
+    {
+      "name": "损坏 全额损失 -500",
+      "ok": true,
+      "detail": "-500.0"
+    },
+    {
+      "name": "损坏 折旧=500",
+      "ok": true,
+      "detail": "500.0"
+    },
+    {
+      "name": "损坏 折旧率=100",
+      "ok": true,
+      "detail": "100.0"
+    },
+    {
+      "name": "溢价 盈亏=200",
+      "ok": true,
+      "detail": "200.0"
+    },
+    {
+      "name": "溢价 折旧不为负",
+      "ok": true,
+      "detail": "(0.0, 0.0)"
+    },
+    {
+      "name": "恢复使用中",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "改购买日晚于处理日 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "挂待售",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "状态 for_sale",
+      "ok": true,
+      "detail": "for_sale"
+    },
+    {
+      "name": "days_listed=10",
+      "ok": true,
+      "detail": "10"
+    },
+    {
+      "name": "待售仍计持有成本",
+      "ok": true,
+      "detail": "66.67"
+    },
+    {
+      "name": "挂单浮亏 -500",
+      "ok": true,
+      "detail": "-500.0"
+    },
+    {
+      "name": "上架日早于购买日 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "上架日晚于今天 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "改挂单价",
+      "ok": true,
+      "detail": "{'ok': True, 'list_price': 3000.0, 'list_pnl': -1000.0}"
+    },
+    {
+      "name": "下架回到 in_use",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "非待售改价 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "已售出不能转待售 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "待售看板 200",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "看板计数与列表一致",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "name": "删除返回完整记录",
+      "ok": true,
+      "detail": "{'ok': True, 'deleted': {'id': 9, 'name': '待删', 'brand': '', 'category': '', 'price': 800.0, 'purchase_date': '2026-10-17', 'config': '', 'status': 'in_use', 'sale_date': None, 'sale_price': None, 'custom_fields': {}, 'notes': 'n', 'created_at': '2026-11-06 00:33:14', 'list_date': None, 'list_price': None, 'days_listed': None, 'list_pnl': None, 'list_pnl_rate': None, 'days_held': 20, 'daily_cost': 40.0, 'final_holding_cost': None, 'depreciation': None, 'depreciation_rate': None, 'profit_loss': None}}"
+    },
+    {
+      "name": "删除后不在列表",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "撤销删除成功",
+      "ok": true,
+      "detail": "{'ok': True, 'id': 9}"
+    },
+    {
+      "name": "撤销后 id 复用",
+      "ok": true,
+      "detail": "9"
+    },
+    {
+      "name": "id 冲突时新建（不覆盖）",
+      "ok": true,
+      "detail": "{'ok': True, 'id': 10}"
+    },
+    {
+      "name": "撤销空名 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "删除不存在 -> 404",
+      "ok": true,
+      "detail": "404"
+    },
+    {
+      "name": "新增预购",
+      "ok": true,
+      "detail": "{'ok': True, 'id': 1}"
+    },
+    {
+      "name": "days_left=30",
+      "ok": true,
+      "detail": "30"
+    },
+    {
+      "name": "预购空名 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "改心理价",
+      "ok": true,
+      "detail": "{'ok': True, 'target_price': 2300.0}"
+    },
+    {
+      "name": "负心理价 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "看板预算=2300",
+      "ok": true,
+      "detail": "2300.0"
+    },
+    {
+      "name": "看板转化率=0",
+      "ok": true,
+      "detail": "0.0"
+    },
+    {
+      "name": "预购转资产",
+      "ok": true,
+      "detail": "{'ok': True, 'product_id': 11}"
+    },
+    {
+      "name": "转化价覆盖预算",
+      "ok": true,
+      "detail": "2200.0"
+    },
+    {
+      "name": "转化继承规格",
+      "ok": true,
+      "detail": "512G"
+    },
+    {
+      "name": "转化继承自定义字段",
+      "ok": true,
+      "detail": "{'容量': '512G'}"
+    },
+    {
+      "name": "重复转化 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "已转化不可编辑 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "已转化不可改价 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "已转化不可放弃 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "转化后预算=0",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "name": "转化率=100",
+      "ok": true,
+      "detail": "100.0"
+    },
+    {
+      "name": "放弃预购",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "恢复预购",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "非放弃状态恢复 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "删除预购",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "预购非法 JSON 体不崩",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "JSON 覆盖导入 4 条",
+      "ok": true,
+      "detail": "{'ok': True, 'inserted': 4, 'skipped': 0, 'total': 4}"
+    },
+    {
+      "name": "覆盖导入自动备份",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "总件数=4",
+      "ok": true,
+      "detail": "4"
+    },
+    {
+      "name": "持有资产总额=3000",
+      "ok": true,
+      "detail": "3000.0"
+    },
+    {
+      "name": "总投入=6500",
+      "ok": true,
+      "detail": "6500.0"
+    },
+    {
+      "name": "当前日成本=200",
+      "ok": true,
+      "detail": "200.0"
+    },
+    {
+      "name": "累计盈亏=-1000",
+      "ok": true,
+      "detail": "-1000.0"
+    },
+    {
+      "name": "亏损件数=2",
+      "ok": true,
+      "detail": "2"
+    },
+    {
+      "name": "状态分布 待售=1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "月度聚合非空",
+      "ok": true,
+      "detail": "[{'month': '2026-10', 'value': 6000.0}, {'month': '2026-11', 'value': 500.0}]"
+    },
+    {
+      "name": "折旧接口 total=4",
+      "ok": true,
+      "detail": "4"
+    },
+    {
+      "name": "limit 生效",
+      "ok": true,
+      "detail": "1"
+    },
+    {
+      "name": "Top N + others 守恒",
+      "ok": true,
+      "detail": "325.0"
+    },
+    {
+      "name": "时间线累计单调",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "时间线累计=总投入",
+      "ok": true,
+      "detail": "6500.0"
+    },
+    {
+      "name": "JSON 导出 count=4",
+      "ok": true,
+      "detail": "4"
+    },
+    {
+      "name": "JSON 导出含 custom_fields",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "CSV 带 BOM",
+      "ok": true,
+      "detail": "b'\\xef\\xbb\\xbf'"
+    },
+    {
+      "name": "CSV 表头完整",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "CSV 公式注入转义 =",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "CSV 公式注入转义 @",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "负数不当公式",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "重复导入全部跳过",
+      "ok": true,
+      "detail": "{'ok': True, 'inserted': 0, 'skipped': 7, 'total': 7}"
+    },
+    {
+      "name": "CSV 追加导入 1 条",
+      "ok": true,
+      "detail": "{'ok': True, 'inserted': 1, 'skipped': 0, 'total': 1}"
+    },
+    {
+      "name": "CSV 引号内逗号/换行正确",
+      "ok": true,
+      "detail": "line1\nline2"
+    },
+    {
+      "name": "GBK CSV 导入",
+      "ok": true,
+      "detail": "{'ok': True, 'inserted': 1, 'skipped': 0, 'total': 1}"
+    },
+    {
+      "name": "GBK 中文未乱码",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "无文件 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "不支持扩展名 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "坏 JSON -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "SQL 注入无效",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "注入后报表可用",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "XSS 字符串原样存储（前端需转义）",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "20 万字符备注可写入",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "8 线程 × 20 并发写全部成功",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "批量导入 1200 条",
+      "ok": true,
+      "detail": "{'ok': True, 'inserted': 1200, 'skipped': 0, 'total': 1200}"
+    },
+    {
+      "name": "列表接口 < 1.5s",
+      "ok": true,
+      "detail": "0.04s"
+    },
+    {
+      "name": "汇总接口 < 1s",
+      "ok": true,
+      "detail": "0.03s"
+    },
+    {
+      "name": "折旧接口 < 1s",
+      "ok": true,
+      "detail": "0.03s"
+    },
+    {
+      "name": "待售状态不可由 sell 写入 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "撤销删除校验结算字段 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "脏数据后列表仍可用",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "覆盖导入无有效行 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "覆盖导入失败不清空原数据",
+      "ok": true,
+      "detail": "(1373, 1373)"
+    },
+    {
+      "name": "出售未填价格 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "撤销删除拒绝未来日期 -> 400",
+      "ok": true,
+      "detail": "400"
+    },
+    {
+      "name": "预购脏日期仍返回 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "脏日期 days_left 为 None",
+      "ok": true,
+      "detail": "None"
+    },
+    {
+      "name": "健康检查 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "大响应 gzip",
+      "ok": true,
+      "detail": "gzip"
+    },
+    {
+      "name": "gzip 解压后可解析",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "斜杠日期可导入",
+      "ok": true,
+      "detail": "{'ok': True, 'inserted': 1, 'skipped': 0, 'total': 1}"
+    },
+    {
+      "name": "斜杠日期归一化为 ISO",
+      "ok": true,
+      "detail": "2026-10-01"
+    },
+    {
+      "name": "导入无售价盈亏为空",
+      "ok": true,
+      "detail": "None"
+    },
+    {
+      "name": "子路径首页 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "注入 base 前缀",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "静态资源改相对路径",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "子路径 API 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "子路径静态资源 200",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "根路径仍然可用（局域网直连）",
+      "ok": true,
+      "detail": "200"
+    },
+    {
+      "name": "根路径 base 为 /",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "日志模式为 wal/delete",
+      "ok": true,
+      "detail": "wal"
+    },
+    {
+      "name": "索引齐全",
+      "ok": true,
+      "detail": "['idx_products_pdate', 'idx_products_status', 'idx_wishlist_status']"
+    },
+    {
+      "name": "products 含待售字段",
+      "ok": true,
+      "detail": "['id', 'name', 'brand', 'category', 'price', 'purchase_date', 'config', 'status', 'sale_date', 'sale_price', 'custom_fields', 'notes', 'created_at', 'list_date', 'list_price']"
+    },
+    {
+      "name": "wishlist 含 config",
+      "ok": true,
+      "detail": "['id', 'name', 'brand', 'category', 'target_price', 'expected_date', 'priority', 'source', 'status', 'product_id', 'converted_at', 'custom_fields', 'notes', 'created_at', 'config']"
+    },
+    {
+      "name": "旧库启动自动迁移",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "迁移补列 list_date",
+      "ok": true,
+      "detail": "['id', 'name', 'brand', 'category', 'price', 'purchase_date', 'config', 'status', 'sale_date', 'sale_price', 'custom_fields', 'notes', 'created_at', 'list_date', 'list_price']"
+    },
+    {
+      "name": "迁移不丢数据",
+      "ok": true,
+      "detail": "1"
+    },
+    {
+      "name": "迁移补建 wishlist",
+      "ok": true,
+      "detail": "['products', 'sqlite_sequence', 'wishlist']"
+    }
+  ],
+  "issues": []
+}
